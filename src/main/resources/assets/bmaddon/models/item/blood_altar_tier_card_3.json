@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bmaddon:item/blood_altar_tier_card_3"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "bloodmagic:altar",
+  "input": {
+    "item": "ae2:speed_card"
+  },
+  "output": {
+    "item": "bmaddon:blood_magic_speed_card"
+  },
+  "upgradeLevel": 3,
+  "altarSyphon": 10000,
+  "consumptionRate": 20,
+  "drainRate": 20
+}

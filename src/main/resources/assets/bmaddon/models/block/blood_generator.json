@@ -1,0 +1,12 @@
+{
+  "loader": "forge:obj",
+  "model": "bmaddon:models/block/blood_generator.obj",
+  "mtl_override": "bmaddon:models/block/blood_1.mtl",
+  "flip_v": true,
+  "automatic_culling": true,
+  "shade_quads": true,
+  "textures": {
+    "texture0": "bmaddon:block/blood_generator",
+    "particle": "bmaddon:block/blood_generator"
+  }
+}

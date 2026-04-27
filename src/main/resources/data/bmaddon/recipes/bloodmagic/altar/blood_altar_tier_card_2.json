@@ -1,0 +1,13 @@
+{
+  "type": "bloodmagic:altar",
+  "input": {
+    "item": "bloodmagic:altarcapacityrune"
+  },
+  "output": {
+    "item": "bmaddon:blood_altar_tier_card_2"
+  },
+  "upgradeLevel": 1,
+  "altarSyphon": 2000,
+  "consumptionRate": 10,
+  "drainRate": 10
+}
