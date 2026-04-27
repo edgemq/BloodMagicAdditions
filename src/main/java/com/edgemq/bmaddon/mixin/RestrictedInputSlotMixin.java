@@ -11,17 +11,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = RestrictedInputSlot.class, remap = false)
+@Mixin(targets = "appeng.menu.slot.RestrictedInputSlot")
 public abstract class RestrictedInputSlotMixin {
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private RestrictedInputSlot.PlacableItemType which;
 
     @Inject(
-            method = "mayPlace",
+            method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z",
             at = @At("RETURN"),
             cancellable = true,
-            remap = false
+            remap = true
     )
     private void bmaddon$allowBloodAltarPatternInAe2PatternSlots(
             ItemStack stack,

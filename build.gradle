@@ -158,7 +158,7 @@ repositories {
 dependencies {
     // Blood Magic
     modImplementation "curse.maven:blood-magic-224791:7956981"
-
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     modCompileOnly "mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"
 
