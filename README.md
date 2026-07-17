@@ -4,9 +4,9 @@
 
 ### Bring **Blood Magic** automation into your **Applied Energistics 2** network.
 
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-green.svg)]()
-[![Forge](https://img.shields.io/badge/Loader-Forge-orange.svg)]()
-[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)]()
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-green.svg)](https://www.minecraft.net/ru-ru)
+[![Forge](https://img.shields.io/badge/Loader-Forge-orange.svg)](https://github.com/NeoForgeMDKs/MDK-Forge-1.20.1-ModDevGradle)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/edgemq/BloodMagicAdditions/blob/master/LICENSE)
 [![CurseForge](https://img.shields.io/badge/Download-CurseForge-red.svg)](https://www.curseforge.com/minecraft/mc-mods/bmaddon)
 
 *Automate Blood Magic crafting using your ME network.*
