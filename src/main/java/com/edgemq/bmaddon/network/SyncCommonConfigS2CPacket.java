@@ -1,19 +1,22 @@
 package com.edgemq.bmaddon.network;
 
+import com.edgemq.bmaddon.BMAddon;
 import com.edgemq.bmaddon.config.SyncedBMAddonConfig;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record SyncCommonConfigS2CPacket(SyncedBMAddonConfig.Snapshot snapshot) implements CustomPacketPayload {
+    public static final Type<SyncCommonConfigS2CPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath(BMAddon.MODID, "sync_common_config")
+    );
 
-public final class SyncCommonConfigS2CPacket {
-    private final SyncedBMAddonConfig.Snapshot snapshot;
+    public static final StreamCodec<FriendlyByteBuf, SyncCommonConfigS2CPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(SyncCommonConfigS2CPacket::encode, SyncCommonConfigS2CPacket::decode);
 
-    public SyncCommonConfigS2CPacket(SyncedBMAddonConfig.Snapshot snapshot) {
-        this.snapshot = snapshot;
-    }
-
-    public static void encode(SyncCommonConfigS2CPacket packet, FriendlyByteBuf buffer) {
+    private static void encode(SyncCommonConfigS2CPacket packet, FriendlyByteBuf buffer) {
         SyncedBMAddonConfig.Snapshot snapshot = packet.snapshot;
 
         buffer.writeVarInt(snapshot.bloodGeneratorEnergyCapacity());
@@ -26,7 +29,7 @@ public final class SyncCommonConfigS2CPacket {
         buffer.writeVarInt(snapshot.bloodGeneratorMaxFluidOutputPerTick());
     }
 
-    public static SyncCommonConfigS2CPacket decode(FriendlyByteBuf buffer) {
+    private static SyncCommonConfigS2CPacket decode(FriendlyByteBuf buffer) {
         SyncedBMAddonConfig.Snapshot snapshot = new SyncedBMAddonConfig.Snapshot(
                 buffer.readVarInt(),
                 buffer.readVarInt(),
@@ -41,10 +44,12 @@ public final class SyncCommonConfigS2CPacket {
         return new SyncCommonConfigS2CPacket(snapshot);
     }
 
-    public static void handle(SyncCommonConfigS2CPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
+    public static void handle(SyncCommonConfigS2CPacket packet, IPayloadContext context) {
+        SyncedBMAddonConfig.setClientSnapshot(packet.snapshot);
+    }
 
-        context.enqueueWork(() -> SyncedBMAddonConfig.setClientSnapshot(packet.snapshot));
-        context.setPacketHandled(true);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

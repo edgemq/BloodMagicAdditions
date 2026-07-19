@@ -3,13 +3,13 @@ package com.edgemq.bmaddon.event;
 import com.edgemq.bmaddon.BMAddon;
 import com.edgemq.bmaddon.network.BMAddonNetwork;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@Mod.EventBusSubscriber(
+@EventBusSubscriber(
         modid = BMAddon.MODID,
-        bus = Mod.EventBusSubscriber.Bus.FORGE
+        bus = EventBusSubscriber.Bus.GAME
 )
 public final class BMAddonForgeEvents {
     @SubscribeEvent

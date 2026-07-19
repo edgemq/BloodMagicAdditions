@@ -10,9 +10,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 @OnlyIn(Dist.CLIENT)
 public class BloodAltarAssemblerRenderer implements BlockEntityRenderer<BloodAltarAssemblerBlockEntity> {
@@ -42,7 +42,7 @@ public class BloodAltarAssemblerRenderer implements BlockEntityRenderer<BloodAlt
         Minecraft minecraft = Minecraft.getInstance();
 
         BakedModel lightsModel = minecraft.getModelManager().getModel(
-                BMAddonClientEvents.BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL
+                BMAddonClientEvents.BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL_LOCATION
         );
 
         VertexConsumer buffer = bufferSource.getBuffer(RenderType.tripwire());

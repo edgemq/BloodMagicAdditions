@@ -4,17 +4,17 @@ import com.edgemq.bmaddon.BMAddon;
 import com.edgemq.bmaddon.block.BloodAltarAssemblerBlock;
 import com.edgemq.bmaddon.blockentity.BloodAltarAssemblerBlockEntity;
 import com.edgemq.bmaddon.blockentity.BloodGeneratorBlockEntity;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public final class BMAddonBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, BMAddon.MODID);
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, BMAddon.MODID);
 
-    public static final RegistryObject<BlockEntityType<BloodGeneratorBlockEntity>> BLOOD_GENERATOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BloodGeneratorBlockEntity>> BLOOD_GENERATOR =
             BLOCK_ENTITIES.register(
                     "blood_generator",
                     () -> BlockEntityType.Builder.of(
@@ -23,7 +23,7 @@ public final class BMAddonBlockEntities {
                     ).build(null)
             );
 
-    public static final RegistryObject<BlockEntityType<BloodAltarAssemblerBlockEntity>> BLOOD_ALTAR_ASSEMBLER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BloodAltarAssemblerBlockEntity>> BLOOD_ALTAR_ASSEMBLER =
             BLOCK_ENTITIES.register(
                     "blood_altar_assembler",
                     () -> {

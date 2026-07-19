@@ -11,15 +11,17 @@ import com.edgemq.bmaddon.ae2.BloodAltarPatternDecoder;
 import com.edgemq.bmaddon.config.BMAddonCommonConfig;
 import com.edgemq.bmaddon.network.BMAddonNetwork;
 import com.edgemq.bmaddon.registry.BMAddonItems;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
-@Mod.EventBusSubscriber(
+@EventBusSubscriber(
         modid = BMAddon.MODID,
-        bus = Mod.EventBusSubscriber.Bus.MOD
+        bus = EventBusSubscriber.Bus.MOD
 )
 public final class BMAddonModEvents {
     private static boolean registeredPatternDecoder;
@@ -39,6 +41,20 @@ public final class BMAddonModEvents {
                 registeredUpgrades = true;
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                com.edgemq.bmaddon.registry.BMAddonBlockEntities.BLOOD_GENERATOR.get(),
+                (blockEntity, side) -> blockEntity.getEnergyHandler()
+        );
+        event.registerBlockEntity(
+                Capabilities.FluidHandler.BLOCK,
+                com.edgemq.bmaddon.registry.BMAddonBlockEntities.BLOOD_GENERATOR.get(),
+                (blockEntity, side) -> blockEntity.getFluidHandler()
+        );
     }
 
     private static void registerBloodAltarAssemblerUpgrades() {

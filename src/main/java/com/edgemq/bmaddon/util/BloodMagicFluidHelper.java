@@ -1,12 +1,12 @@
 package com.edgemq.bmaddon.util;
 
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import wayoftime.bloodmagic.common.fluid.BloodMagicFluids;
+import net.neoforged.neoforge.fluids.FluidStack;
+import wayoftime.bloodmagic.common.fluid.BMFluids;
 
 public final class BloodMagicFluidHelper {
     public static Fluid lifeEssenceFluid() {
-        Object value = BloodMagicFluids.LIFE_ESSENCE_FLUID.get();
+        Object value = BMFluids.LIFE_ESSENCE_SOURCE.get();
 
         if (value instanceof Fluid fluid) {
             return fluid;

@@ -1,30 +1,30 @@
 package com.edgemq.bmaddon.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class BMAddonCommonConfig {
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.IntValue BLOOD_GENERATOR_ENERGY_CAPACITY;
-    public static final ForgeConfigSpec.IntValue BLOOD_GENERATOR_MAX_ENERGY_INPUT;
-    public static final ForgeConfigSpec.IntValue BLOOD_GENERATOR_LIFE_TANK_CAPACITY;
-    public static final ForgeConfigSpec.IntValue BLOOD_GENERATOR_ENERGY_PER_OPERATION;
-    public static final ForgeConfigSpec.IntValue BLOOD_GENERATOR_LIFE_ESSENCE_PER_OPERATION;
-    public static final ForgeConfigSpec.IntValue BLOOD_GENERATOR_WORK_INTERVAL_TICKS;
-    public static final ForgeConfigSpec.BooleanValue BLOOD_GENERATOR_AUTO_OUTPUT;
-    public static final ForgeConfigSpec.IntValue BLOOD_GENERATOR_MAX_FLUID_OUTPUT_PER_TICK;
+    public static final ModConfigSpec.IntValue BLOOD_GENERATOR_ENERGY_CAPACITY;
+    public static final ModConfigSpec.IntValue BLOOD_GENERATOR_MAX_ENERGY_INPUT;
+    public static final ModConfigSpec.IntValue BLOOD_GENERATOR_LIFE_TANK_CAPACITY;
+    public static final ModConfigSpec.IntValue BLOOD_GENERATOR_ENERGY_PER_OPERATION;
+    public static final ModConfigSpec.IntValue BLOOD_GENERATOR_LIFE_ESSENCE_PER_OPERATION;
+    public static final ModConfigSpec.IntValue BLOOD_GENERATOR_WORK_INTERVAL_TICKS;
+    public static final ModConfigSpec.BooleanValue BLOOD_GENERATOR_AUTO_OUTPUT;
+    public static final ModConfigSpec.IntValue BLOOD_GENERATOR_MAX_FLUID_OUTPUT_PER_TICK;
 
-    public static final ForgeConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_BASE_CRAFT_TIME_TICKS;
-    public static final ForgeConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_MIN_CRAFT_TIME_TICKS;
-    public static final ForgeConfigSpec.DoubleValue BLOOD_ALTAR_ASSEMBLER_AE_PER_TICK_BASE;
-    public static final ForgeConfigSpec.DoubleValue BLOOD_ALTAR_ASSEMBLER_AE_PER_TICK_PER_ACCELERATION_CARD;
-    public static final ForgeConfigSpec.DoubleValue BLOOD_ALTAR_ASSEMBLER_LIFE_ESSENCE_MULTIPLIER;
-    public static final ForgeConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_BASE_PARALLEL_CRAFTS;
-    public static final ForgeConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_PARALLEL_CRAFTS_PER_CARD;
-    public static final ForgeConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_MAX_PARALLEL_CRAFTS;
+    public static final ModConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_BASE_CRAFT_TIME_TICKS;
+    public static final ModConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_MIN_CRAFT_TIME_TICKS;
+    public static final ModConfigSpec.DoubleValue BLOOD_ALTAR_ASSEMBLER_AE_PER_TICK_BASE;
+    public static final ModConfigSpec.DoubleValue BLOOD_ALTAR_ASSEMBLER_AE_PER_TICK_PER_ACCELERATION_CARD;
+    public static final ModConfigSpec.DoubleValue BLOOD_ALTAR_ASSEMBLER_LIFE_ESSENCE_MULTIPLIER;
+    public static final ModConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_BASE_PARALLEL_CRAFTS;
+    public static final ModConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_PARALLEL_CRAFTS_PER_CARD;
+    public static final ModConfigSpec.IntValue BLOOD_ALTAR_ASSEMBLER_MAX_PARALLEL_CRAFTS;
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.push("blood_generator");
 

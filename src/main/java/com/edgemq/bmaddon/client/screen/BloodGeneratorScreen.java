@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 import java.util.List;
 
 public class BloodGeneratorScreen extends AbstractContainerScreen<BloodGeneratorMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
             BMAddon.MODID,
             "textures/gui/blood_generator.png"
     );
@@ -101,7 +101,7 @@ public class BloodGeneratorScreen extends AbstractContainerScreen<BloodGenerator
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderBloodTooltip(guiGraphics, mouseX, mouseY);
         this.renderTooltip(guiGraphics, mouseX, mouseY);

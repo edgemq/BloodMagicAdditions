@@ -10,32 +10,50 @@ import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
 import com.edgemq.bmaddon.registry.BMAddonBlocks;
 import com.edgemq.bmaddon.registry.BMAddonItems;
 import com.edgemq.bmaddon.registry.BMAddonMenus;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(
+@EventBusSubscriber(
         modid = BMAddon.MODID,
-        bus = Mod.EventBusSubscriber.Bus.MOD,
+        bus = EventBusSubscriber.Bus.MOD,
         value = Dist.CLIENT
 )
 public final class BMAddonClientEvents {
-    public static final ResourceLocation BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL = new ResourceLocation(
+    public static final ResourceLocation BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL = ResourceLocation.fromNamespaceAndPath(
             BMAddon.MODID,
             "block/blood_altar_assembler_lights"
     );
+    public static final ModelResourceLocation BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL_LOCATION =
+            ModelResourceLocation.standalone(BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL);
 
     @SubscribeEvent
     public static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
-        event.register(BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL);
+        event.register(BLOOD_ALTAR_ASSEMBLER_LIGHTS_MODEL_LOCATION);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(
+                BMAddonMenus.BLOOD_GENERATOR.get(),
+                BloodGeneratorScreen::new
+        );
+
+        InitScreens.register(
+                event,
+                BMAddonMenus.BLOOD_ALTAR_ASSEMBLER.get(),
+                BloodAltarAssemblerScreen::new,
+                "/screens/blood_altar_assembler.json"
+        );
     }
 
     @SubscribeEvent
@@ -44,17 +62,6 @@ public final class BMAddonClientEvents {
             ItemBlockRenderTypes.setRenderLayer(
                     BMAddonBlocks.BLOOD_ALTAR_ASSEMBLER.get(),
                     RenderType.cutout()
-            );
-
-            MenuScreens.register(
-                    BMAddonMenus.BLOOD_GENERATOR.get(),
-                    BloodGeneratorScreen::new
-            );
-
-            InitScreens.register(
-                    BMAddonMenus.BLOOD_ALTAR_ASSEMBLER.get(),
-                    BloodAltarAssemblerScreen::new,
-                    "/screens/blood_altar_assembler.json"
             );
 
             BlockEntityRenderers.register(
@@ -67,7 +74,7 @@ public final class BMAddonClientEvents {
             );
             ItemProperties.register(
                     BMAddonItems.BLOOD_ALTAR_PATTERN.get(),
-                    new ResourceLocation(BMAddon.MODID, "encoded"),
+                    ResourceLocation.fromNamespaceAndPath(BMAddon.MODID, "encoded"),
                     (stack, level, entity, seed) -> BloodAltarPatternItem.isEncoded(stack) ? 1.0F : 0.0F
             );
         });

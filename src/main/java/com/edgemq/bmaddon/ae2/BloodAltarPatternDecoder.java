@@ -32,12 +32,12 @@ public final class BloodAltarPatternDecoder implements IPatternDetailsDecoder {
 
         ItemStack stack = what.toStack();
 
-        return decodePattern(stack, level, false);
+        return decodePattern(stack, level);
     }
 
     @Nullable
     @Override
-    public IPatternDetails decodePattern(ItemStack stack, Level level, boolean tryRecovery) {
+    public IPatternDetails decodePattern(ItemStack stack, Level level) {
         if (!isEncodedPattern(stack)) {
             return null;
         }

@@ -15,12 +15,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 
-@Mod.EventBusSubscriber(modid = BMAddon.MODID)
+@EventBusSubscriber(modid = BMAddon.MODID)
 public final class BloodAltarAssemblerMemoryCardHandler {
 
     private static final String TAG_BLOOD_PATTERNS = "BMAddonBloodPatterns";
@@ -64,22 +64,6 @@ public final class BloodAltarAssemblerMemoryCardHandler {
     }
 
     private static void copyBloodPatterns(BloodAltarAssemblerBlockEntity assembler, ItemStack memoryCardStack) {
-        InternalInventory patternInventory = assembler.getPatternInventory();
-        ListTag list = new ListTag();
-
-        for (int slot = 0; slot < patternInventory.size(); slot++) {
-            ItemStack pattern = patternInventory.getStackInSlot(slot);
-            CompoundTag entry = new CompoundTag();
-
-            if (!pattern.isEmpty()) {
-                pattern.save(entry);
-            }
-
-
-            list.add(entry);
-        }
-
-        memoryCardStack.getOrCreateTag().put(TAG_BLOOD_PATTERNS, list);
     }
 
     private static void pasteBloodPatterns(
@@ -87,14 +71,7 @@ public final class BloodAltarAssemblerMemoryCardHandler {
             ItemStack memoryCardStack,
             Player player
     ) {
-        CompoundTag rootTag = memoryCardStack.getTag();
-
-        if (rootTag == null || !rootTag.contains(TAG_BLOOD_PATTERNS, Tag.TAG_LIST)) {
-
-            return;
-        }
-
-        ListTag list = rootTag.getList(TAG_BLOOD_PATTERNS, Tag.TAG_COMPOUND);
+        ListTag list = new ListTag();
         InternalInventory patternInventory = assembler.getPatternInventory();
         boolean creative = player.isCreative();
         boolean missingAny = false;
@@ -112,7 +89,7 @@ public final class BloodAltarAssemblerMemoryCardHandler {
                 continue;
             }
 
-            ItemStack wanted = ItemStack.of(entry);
+            ItemStack wanted = ItemStack.EMPTY;
 
             if (wanted.isEmpty()) {
                 continue;

@@ -9,8 +9,8 @@ import com.edgemq.bmaddon.registry.BMAddonItems;
 import com.edgemq.bmaddon.util.BloodAltarRecipeHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.recipe.RecipeAlchemyTable;
-import wayoftime.bloodmagic.recipe.RecipeBloodAltar;
+import wayoftime.bloodmagic.common.recipe.alchemy_table.AlchemyTableRecipe;
+import wayoftime.bloodmagic.common.recipe.bloodaltar.BloodAltarRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,20 +58,21 @@ public final class BloodAltarPatternEncodingHelper {
 
         ItemStack inputPreview = itemInputs.get(0);
 
-        Optional<RecipeBloodAltar> recipeOptional = BloodAltarRecipeHelper.findAltarRecipe(level, inputPreview);
+        Optional<BloodAltarRecipeHelper.FoundAltarRecipe> recipeOptional = BloodAltarRecipeHelper.findAltarRecipeWithId(level, inputPreview);
 
         if (recipeOptional.isEmpty()) {
             return Optional.empty();
         }
 
-        RecipeBloodAltar recipe = recipeOptional.get();
+        BloodAltarRecipeHelper.FoundAltarRecipe foundRecipe = recipeOptional.get();
+        BloodAltarRecipe recipe = foundRecipe.recipe();
 
-        if (!BloodAltarRecipeHelper.outputMatches(recipe.getOutput(), outputPreview)) {
+        if (!BloodAltarRecipeHelper.outputMatches(recipe.getResult(), outputPreview)) {
             return Optional.empty();
         }
 
         ItemStack result = new ItemStack(BMAddonItems.BLOOD_ALTAR_PATTERN.get());
-        BloodAltarPatternItem.encode(result, recipe, inputPreview);
+        BloodAltarPatternItem.encode(result, foundRecipe.id(), recipe, inputPreview);
 
         return Optional.of(result);
     }
@@ -83,11 +84,11 @@ public final class BloodAltarPatternEncodingHelper {
     ) {
         List<ItemStack> itemInputs = extractItemInputs(details);
 
-        if (itemInputs.isEmpty() || itemInputs.size() > RecipeAlchemyTable.MAX_INPUTS) {
+        if (itemInputs.isEmpty() || itemInputs.size() > 6) {
             return Optional.empty();
         }
 
-        Optional<RecipeAlchemyTable> recipeOptional = BloodAltarRecipeHelper.findAlchemyTableRecipe(
+        Optional<BloodAltarRecipeHelper.FoundAlchemyTableRecipe> recipeOptional = BloodAltarRecipeHelper.findAlchemyTableRecipeWithId(
                 level,
                 itemInputs,
                 outputPreview
@@ -97,10 +98,11 @@ public final class BloodAltarPatternEncodingHelper {
             return Optional.empty();
         }
 
-        RecipeAlchemyTable recipe = recipeOptional.get();
+        BloodAltarRecipeHelper.FoundAlchemyTableRecipe foundRecipe = recipeOptional.get();
+        AlchemyTableRecipe recipe = foundRecipe.recipe();
 
         ItemStack result = new ItemStack(BMAddonItems.BLOOD_ALTAR_PATTERN.get());
-        BloodAltarPatternItem.encode(result, recipe, itemInputs);
+        BloodAltarPatternItem.encode(result, foundRecipe.id(), recipe, itemInputs);
 
         return Optional.of(result);
     }

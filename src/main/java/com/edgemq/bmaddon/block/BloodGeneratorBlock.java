@@ -1,13 +1,14 @@
 package com.edgemq.bmaddon.block;
 
+import com.mojang.serialization.MapCodec;
 import com.edgemq.bmaddon.blockentity.BloodGeneratorBlockEntity;
 import com.edgemq.bmaddon.network.BMAddonNetwork;
 import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -19,11 +20,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
 public class BloodGeneratorBlock extends BaseEntityBlock {
+    public static final MapCodec<BloodGeneratorBlock> CODEC = simpleCodec(BloodGeneratorBlock::new);
+
     private static final VoxelShape SHAPE = box(
             0.0D,
             0.0D,
@@ -35,6 +37,11 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
 
     public BloodGeneratorBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Nullable
@@ -87,12 +94,11 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(
+    protected InteractionResult useWithoutItem(
             BlockState state,
             Level level,
             BlockPos pos,
             Player player,
-            InteractionHand hand,
             BlockHitResult hit
     ) {
         if (level.isClientSide()) {
@@ -103,7 +109,10 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
 
         if (blockEntity instanceof BloodGeneratorBlockEntity bloodGenerator && player instanceof ServerPlayer serverPlayer) {
             BMAddonNetwork.sendConfigToPlayer(serverPlayer);
-            NetworkHooks.openScreen(serverPlayer, bloodGenerator, pos);
+            serverPlayer.openMenu(
+                    new SimpleMenuProvider(bloodGenerator::createMenu, bloodGenerator.getDisplayName()),
+                    pos
+            );
             return InteractionResult.CONSUME;
         }
 

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "DBD"
+  ],
+  "key": {
+    "A": {
+      "item": "bloodmagic:selfsacrificerune2"
+    },
+    "B": {
+      "item": "bloodmagic:etherealslate"
+    },
+    "C": {
+      "item": "ae2:dense_energy_cell"
+    },
+    "D": {
+      "item": "bloodmagic:sacrificerune2"
+    }
+  },
+  "result": {
+    "item": "bmaddon:blood_generator",
+    "count": 1
+  }
+}
