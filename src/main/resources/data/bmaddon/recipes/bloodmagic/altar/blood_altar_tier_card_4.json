@@ -1,0 +1,13 @@
+{
+  "type": "bloodmagic:altar",
+  "input": {
+    "item": "bmaddon:blood_altar_tier_card_3"
+  },
+  "output": {
+    "item": "bmaddon:blood_altar_tier_card_4"
+  },
+  "upgradeLevel": 3,
+  "altarSyphon": 10000,
+  "consumptionRate": 20,
+  "drainRate": 20
+}

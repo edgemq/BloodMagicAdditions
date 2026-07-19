@@ -1,0 +1,6 @@
+{
+  "parent": "ae2:block/molecular_assembler_lights",
+  "textures": {
+    "all": "bmaddon:block/blood_altar_assembler_lights"
+  }
+}

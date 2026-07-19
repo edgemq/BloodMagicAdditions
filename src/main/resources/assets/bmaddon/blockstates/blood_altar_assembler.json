@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "bmaddon:block/blood_altar_assembler"
+    }
+  }
+}
