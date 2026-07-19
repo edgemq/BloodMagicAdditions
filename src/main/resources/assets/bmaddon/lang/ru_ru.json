@@ -56,7 +56,7 @@
 
   "tooltip.bmaddon.blood_altar_parallel_card.description": "Увеличивает количество одновременных крафтов в сборщике кровавой магии.",
 
-  "tooltip.bmaddon.blood_magic_speed_card.description": "Работает как карта ускорения AE2, но считается за две обычные карты.",
+  "tooltip.bmaddon.blood_magic_speed_card.description": "Работает в кровавом сборщике, считается за четыре обычные карты и может превышать обычный лимит скорости AE2.",
 
   "message.bmaddon.blood_altar_pattern.cleared": "Шаблон очищен.",
   "message.bmaddon.blood_altar_pattern.already_empty": "Шаблон уже пуст."

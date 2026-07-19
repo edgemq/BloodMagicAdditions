@@ -28,6 +28,7 @@ import com.edgemq.bmaddon.ae2.BloodAltarPatternDetails;
 import com.edgemq.bmaddon.ae2.BloodMagicPatternKind;
 import com.edgemq.bmaddon.config.BMAddonCommonConfig;
 import com.edgemq.bmaddon.item.BloodAltarPatternItem;
+import com.edgemq.bmaddon.item.BloodMagicSpeedCardItem;
 import com.edgemq.bmaddon.menu.BloodAltarAssemblerMenu;
 import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
 import com.edgemq.bmaddon.registry.BMAddonItems;
@@ -66,6 +67,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
     private static final String TAG_CRAFT_PROGRESS_TICKS = "ProgressTicks";
     private static final String TAG_CRAFT_TIME_TICKS = "CraftTimeTicks";
     private static final String TAG_CRAFT_PENDING_OUTPUT = "PendingOutput";
+    private static final double BASE_CRAFT_SPEED_MULTIPLIER = 1.5D;
 
     public static final int PATTERN_SLOT_COUNT = 9;
     public static final int UPGRADE_SLOT_COUNT = 9;
@@ -138,13 +140,28 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
     }
 
     public int getAccelerationCardCount() {
+        return getVanillaSpeedCardCount()
+                + getBloodMagicSpeedCardCount() * BloodMagicSpeedCardItem.SPEED_CARD_EQUIVALENT;
+    }
+
+    private int getVanillaSpeedCardCount() {
         int count = 0;
 
         for (ItemStack stack : upgrades) {
             if (stack.is(AEItems.SPEED_CARD.asItem())) {
                 count += stack.getCount();
-            } else if (BMAddonItems.isBloodMagicSpeedCard(stack)) {
-                count += stack.getCount() * 2;
+            }
+        }
+
+        return count;
+    }
+
+    private int getBloodMagicSpeedCardCount() {
+        int count = 0;
+
+        for (ItemStack stack : upgrades) {
+            if (BMAddonItems.isBloodMagicSpeedCard(stack)) {
+                count += stack.getCount();
             }
         }
 
@@ -500,10 +517,12 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
     private int calculateCraftTimeTicks(int recipeBaseCraftTimeTicks) {
         int configuredBaseTime = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_BASE_CRAFT_TIME_TICKS.get();
         int baseTime = recipeBaseCraftTimeTicks > 0 ? recipeBaseCraftTimeTicks : configuredBaseTime;
-        int minTime = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_MIN_CRAFT_TIME_TICKS.get();
+        int minTime = getBloodMagicSpeedCardCount() > 0
+                ? 1
+                : BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_MIN_CRAFT_TIME_TICKS.get();
         int speedCards = getAccelerationCardCount();
 
-        int calculated = baseTime / Math.max(1, 1 + speedCards);
+        int calculated = (int) Math.ceil(baseTime / (BASE_CRAFT_SPEED_MULTIPLIER * Math.max(1, 1 + speedCards)));
 
         return Math.max(minTime, calculated);
     }

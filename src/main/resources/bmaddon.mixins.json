@@ -6,9 +6,7 @@
   "refmap": "bmaddon.refmap.json",
   "mixins": [
     "PatternEncodingTermMenuMixin",
-    "RestrictedInputSlotMixin",
-    "UpgradesMixin",
-    "UpgradeInventoryMixin"
+    "RestrictedInputSlotMixin"
   ],
   "client": [],
   "server": [],

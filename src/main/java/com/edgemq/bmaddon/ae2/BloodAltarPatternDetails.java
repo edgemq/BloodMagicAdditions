@@ -18,7 +18,6 @@ import wayoftime.bloodmagic.recipe.RecipeBloodAltar;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -327,17 +326,12 @@ public final class BloodAltarPatternDetails implements IPatternDetails {
                 && minimumTier == other.minimumTier
                 && baseCraftTimeTicks == other.baseCraftTimeTicks
                 && Objects.equals(recipeId, other.recipeId)
-                && Objects.equals(definition, other.definition)
-                && Arrays.equals(inputs, other.inputs)
-                && Arrays.equals(outputs, other.outputs);
+                && Objects.equals(getPrimaryOutput(), other.getPrimaryOutput());
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(kind, recipeId, definition, minimumTier, baseCraftTimeTicks);
-        result = 31 * result + Arrays.hashCode(inputs);
-        result = 31 * result + Arrays.hashCode(outputs);
-        return result;
+        return Objects.hash(kind, recipeId, minimumTier, baseCraftTimeTicks, getPrimaryOutput());
     }
 
     private record BloodMagicItemInput(

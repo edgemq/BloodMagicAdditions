@@ -59,6 +59,13 @@ public abstract class PatternEncodingTermMenuMixin {
             return;
         }
 
+        ItemStack blankPattern = blankPatternSlot.getItem();
+
+        if (!blankPattern.isEmpty() && !isBlankBloodAltarPattern(blankPattern)) {
+            callback.cancel();
+            return;
+        }
+
         ItemStack encodeOutput = encodedPatternSlot.getItem();
 
         if (!encodeOutput.isEmpty()
@@ -70,8 +77,6 @@ public abstract class PatternEncodingTermMenuMixin {
         }
 
         if (encodeOutput.isEmpty()) {
-            ItemStack blankPattern = blankPatternSlot.getItem();
-
             if (!isBlankBloodAltarPattern(blankPattern)) {
                 callback.cancel();
                 return;

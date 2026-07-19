@@ -1,21 +1,16 @@
 package com.edgemq.bmaddon.ae2;
 
 import appeng.api.crafting.IPatternDetails;
-import appeng.api.crafting.PatternDetailsHelper;
-import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.GenericStack;
 import com.edgemq.bmaddon.item.BloodAltarPatternItem;
 import com.edgemq.bmaddon.util.BloodAltarRecipeHelper;
-import com.edgemq.bmaddon.util.BloodMagicFluidHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.common.recipe.BloodMagicRecipeType;
 import wayoftime.bloodmagic.recipe.RecipeBloodAltar;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Optional;
 
 public final class BloodAltarPatternMatcher {
@@ -24,45 +19,30 @@ public final class BloodAltarPatternMatcher {
             ItemStack patternStack,
             int bloodMagicRecipeTierLimit
     ) {
-        if (level == null || patternStack.isEmpty()) {
+        if (level == null || patternStack.isEmpty() || !BloodAltarPatternItem.isEncoded(patternStack)) {
             return Optional.empty();
         }
 
-        if (BloodAltarPatternItem.isEncoded(patternStack)) {
-            ResourceLocation recipeId = BloodAltarPatternItem.getRecipeId(patternStack);
+        ResourceLocation recipeId = BloodAltarPatternItem.getRecipeId(patternStack);
 
-            if (recipeId == null) {
-                return Optional.empty();
-            }
-
-            Optional<RecipeBloodAltar> recipeOptional = BloodAltarRecipeHelper.getAltarRecipe(level, recipeId);
-
-            if (recipeOptional.isEmpty()) {
-                return Optional.empty();
-            }
-
-            RecipeBloodAltar recipe = recipeOptional.get();
-
-            if (recipe.getMinimumTier() > bloodMagicRecipeTierLimit) {
-                return Optional.empty();
-            }
-
-            return BloodAltarPatternDetails.create(level, patternStack, recipe)
-                    .map(details -> details);
-        }
-
-        if (!PatternDetailsHelper.isEncodedPattern(patternStack)) {
+        if (recipeId == null) {
             return Optional.empty();
         }
 
-        IPatternDetails decoded = PatternDetailsHelper.decodePattern(patternStack, level);
+        Optional<RecipeBloodAltar> recipeOptional = BloodAltarRecipeHelper.getAltarRecipe(level, recipeId);
 
-        if (decoded == null) {
+        if (recipeOptional.isEmpty()) {
             return Optional.empty();
         }
 
-        return resolvePatternDetails(level, decoded, bloodMagicRecipeTierLimit)
-                .map(resolved -> decoded);
+        RecipeBloodAltar recipe = recipeOptional.get();
+
+        if (recipe.getMinimumTier() > bloodMagicRecipeTierLimit) {
+            return Optional.empty();
+        }
+
+        return BloodAltarPatternDetails.create(level, patternStack, recipe)
+                .map(details -> details);
     }
 
     public static Optional<ResolvedBloodAltarPattern> resolvePatternDetails(
@@ -78,7 +58,7 @@ public final class BloodAltarPatternMatcher {
             return resolveCustomBloodAltarPattern(level, bloodAltarPatternDetails, bloodMagicRecipeTierLimit);
         }
 
-        return resolveAe2ProcessingPattern(level, patternDetails, bloodMagicRecipeTierLimit);
+        return Optional.empty();
     }
 
     private static Optional<ResolvedBloodAltarPattern> resolveCustomBloodAltarPattern(
@@ -113,50 +93,6 @@ public final class BloodAltarPatternMatcher {
         return Optional.of(new ResolvedBloodAltarPattern(recipe.getId(), primaryOutput));
     }
 
-    private static Optional<ResolvedBloodAltarPattern> resolveAe2ProcessingPattern(
-            Level level,
-            IPatternDetails patternDetails,
-            int bloodMagicRecipeTierLimit
-    ) {
-        /*
-         * Обычный AE2 Processing Pattern предназначен для внешних машин.
-         * Crafting patterns, smithing patterns и прочие внутренние шаблоны сюда не пускаем.
-         */
-        if (!patternDetails.supportsPushInputsToExternalInventory()) {
-            return Optional.empty();
-        }
-
-        GenericStack primaryOutput = patternDetails.getPrimaryOutput();
-
-        if (primaryOutput == null || primaryOutput.amount() <= 0) {
-            return Optional.empty();
-        }
-
-        List<RecipeBloodAltar> recipes = level.getRecipeManager().getAllRecipesFor(BloodMagicRecipeType.ALTAR.get());
-
-        for (RecipeBloodAltar recipe : recipes) {
-            if (recipe.getMinimumTier() > bloodMagicRecipeTierLimit) {
-                continue;
-            }
-
-            if (!matchesRecipeOutput(patternDetails, recipe)) {
-                continue;
-            }
-
-            if (!matchesRecipeItemInput(patternDetails, recipe)) {
-                continue;
-            }
-
-            if (!matchesRecipeLifeEssenceInput(patternDetails, recipe)) {
-                continue;
-            }
-
-            return Optional.of(new ResolvedBloodAltarPattern(recipe.getId(), primaryOutput));
-        }
-
-        return Optional.empty();
-    }
-
     private static boolean matchesRecipeOutput(IPatternDetails patternDetails, RecipeBloodAltar recipe) {
         GenericStack primaryOutput = patternDetails.getPrimaryOutput();
 
@@ -180,70 +116,8 @@ public final class BloodAltarPatternMatcher {
                 && primaryOutput.amount() == recipeOutput.getCount();
     }
 
-    private static boolean matchesRecipeItemInput(IPatternDetails patternDetails, RecipeBloodAltar recipe) {
-        for (IPatternDetails.IInput input : patternDetails.getInputs()) {
-            long multiplier = Math.max(1L, input.getMultiplier());
-
-            for (GenericStack possibleInput : input.getPossibleInputs()) {
-                if (!(possibleInput.what() instanceof AEItemKey itemKey)) {
-                    continue;
-                }
-
-                long amount = possibleInput.amount() * multiplier;
-
-                if (amount < 1) {
-                    continue;
-                }
-
-                ItemStack stack = itemKey.toStack(1);
-
-                if (recipe.getInput().test(stack)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static boolean matchesRecipeLifeEssenceInput(IPatternDetails patternDetails, RecipeBloodAltar recipe) {
-        int requiredLifeEssence = BloodAltarPatternDetails.getRequiredLifeEssence(recipe);
-
-        if (requiredLifeEssence <= 0) {
-            return true;
-        }
-
-        AEFluidKey lifeEssenceKey = AEFluidKey.of(BloodMagicFluidHelper.lifeEssenceFluid());
-
-        for (IPatternDetails.IInput input : patternDetails.getInputs()) {
-            long multiplier = Math.max(1L, input.getMultiplier());
-
-            for (GenericStack possibleInput : input.getPossibleInputs()) {
-                if (!possibleInput.what().equals(lifeEssenceKey)) {
-                    continue;
-                }
-
-                long amount = possibleInput.amount() * multiplier;
-
-                if (amount >= requiredLifeEssence) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public static boolean isSupportedPatternStack(ItemStack stack) {
-        if (stack.isEmpty()) {
-            return false;
-        }
-
-        if (BloodAltarPatternItem.isEncoded(stack)) {
-            return true;
-        }
-
-        return PatternDetailsHelper.isEncodedPattern(stack);
+        return BloodAltarPatternItem.isEncoded(stack);
     }
 
     public static ItemStack getOutputPreviewForStack(@Nullable Level level, ItemStack patternStack) {
@@ -255,32 +129,7 @@ public final class BloodAltarPatternMatcher {
             return BloodAltarPatternItem.getOutputPreview(patternStack);
         }
 
-        if (level == null) {
-            return ItemStack.EMPTY;
-        }
-
-        if (!PatternDetailsHelper.isEncodedPattern(patternStack)) {
-            return ItemStack.EMPTY;
-        }
-
-        IPatternDetails decoded = PatternDetailsHelper.decodePattern(patternStack, level);
-
-        if (decoded == null) {
-            return ItemStack.EMPTY;
-        }
-
-        GenericStack primaryOutput = decoded.getPrimaryOutput();
-
-        if (primaryOutput == null || primaryOutput.amount() <= 0) {
-            return ItemStack.EMPTY;
-        }
-
-        if (primaryOutput.what() instanceof AEItemKey itemKey) {
-            int amount = (int) Math.min(Integer.MAX_VALUE, primaryOutput.amount());
-            return itemKey.toStack(amount);
-        }
-
-        return GenericStack.wrapInItemStack(primaryOutput);
+        return ItemStack.EMPTY;
     }
 
     private BloodAltarPatternMatcher() {

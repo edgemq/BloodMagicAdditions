@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BloodMagicSpeedCardItem extends UpgradeCardItem {
-    public static final int SPEED_CARD_EQUIVALENT = 2;
+    public static final int SPEED_CARD_EQUIVALENT = 4;
 
     public BloodMagicSpeedCardItem(Properties properties) {
         super(properties);
