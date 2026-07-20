@@ -89,12 +89,12 @@ public final class BMAddonCommonConfig {
                 .defineInRange("baseParallelCrafts", 1, 1, 64);
 
         BLOOD_ALTAR_ASSEMBLER_PARALLEL_CRAFTS_PER_CARD = builder
-                .comment("How many additional parallel crafts each Blood Altar Parallel Card adds.")
-                .defineInRange("parallelCraftsPerCard", 1, 0, 64);
+                .comment("How many active crafts each Blood Altar Parallel Card allows.")
+                .defineInRange("parallelCraftsPerCard", 2, 0, 64);
 
         BLOOD_ALTAR_ASSEMBLER_MAX_PARALLEL_CRAFTS = builder
                 .comment("Hard cap for active crafts in one Blood Altar Assembler.")
-                .defineInRange("maxParallelCrafts", 4, 1, 64);
+                .defineInRange("maxParallelCrafts", 8, 1, 64);
 
         builder.pop();
 

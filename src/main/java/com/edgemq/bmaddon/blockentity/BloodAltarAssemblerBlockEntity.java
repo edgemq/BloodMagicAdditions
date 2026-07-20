@@ -184,8 +184,9 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
         int base = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_BASE_PARALLEL_CRAFTS.get();
         int perCard = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_PARALLEL_CRAFTS_PER_CARD.get();
         int cap = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_MAX_PARALLEL_CRAFTS.get();
+        int cardCount = getParallelCardCount();
 
-        int calculated = base + getParallelCardCount() * perCard;
+        int calculated = cardCount > 0 ? cardCount * perCard : base;
 
         return Math.max(1, Math.min(cap, calculated));
     }
