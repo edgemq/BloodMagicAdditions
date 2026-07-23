@@ -147,10 +147,24 @@ repositories {
             includeGroup "top.theillusivec4.curios"
         }
     }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "GeckoLib"
+                url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
+            }
+        }
+        filter {
+            includeGroupAndSubgroups "com.geckolib"
+        }
+    }
 }
 
 dependencies {
     implementation "curse.maven:neovitae-1404763:${neovitae_file_id}"
+    implementation "com.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    localRuntime "curse.maven:modonomicon-538392:${modonomicon_file_id}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"

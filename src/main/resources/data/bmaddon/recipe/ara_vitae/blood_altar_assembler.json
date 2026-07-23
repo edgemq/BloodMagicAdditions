@@ -1,8 +1,6 @@
-﻿{
+{
     "type":  "neovitae:ara_vitae_recipe",
-    "input":  {
-                  "item":  "ae2:molecular_assembler"
-              },
+    "input":  "ae2:molecular_assembler",
     "output":  {
                    "id":  "bmaddon:blood_altar_assembler"
                },

@@ -1,8 +1,6 @@
-﻿{
+{
     "type":  "neovitae:ara_vitae_recipe",
-    "input":  {
-                  "item":  "ae2:capacity_card"
-              },
+    "input":  "ae2:capacity_card",
     "output":  {
                    "id":  "bmaddon:blood_altar_parallel_card"
                },

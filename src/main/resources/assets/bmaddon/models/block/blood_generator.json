@@ -1,5 +1,5 @@
 {
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "model": "bmaddon:models/block/blood_generator.obj",
   "mtl_override": "bmaddon:models/block/blood_1.mtl",
   "flip_v": true,

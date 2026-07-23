@@ -34,6 +34,8 @@
 
   "tooltip.bmaddon.blood_generator.energy": "Energy: %s / %s FE",
   "tooltip.bmaddon.blood_generator.blood": "Blood: %s / %s mB",
+  "tooltip.bmaddon.blood_generator.description": "Consumes FE to generate Essentia Vitae.",
+  "tooltip.bmaddon.blood_altar_assembler.description": "AE2 crafting provider for Ara Vitae and Tabula Vitae recipes.",
 
   "tooltip.bmaddon.blood_altar_pattern.empty": "Empty Blood Pattern.",
   "tooltip.bmaddon.blood_altar_pattern.invalid": "Invalid pattern.",
@@ -50,7 +52,7 @@
   "tooltip.bmaddon.blood_altar_pattern.shift_clear": "Shift + Right Click: clear pattern.",
 
   "tooltip.bmaddon.blood_altar_tier_card.tier": "Raises altar tier to: %s",
-  "tooltip.bmaddon.blood_altar_tier_card.description": "All lower-tier recipes remain available.",
+  "tooltip.bmaddon.blood_altar_tier_card.description": "Supports NeoVitae altar tiers up to IV.",
 
   "tooltip.bmaddon.blood_altar_parallel_card.description": "Increases the number of simultaneous crafts in the Blood Assembler.",
 

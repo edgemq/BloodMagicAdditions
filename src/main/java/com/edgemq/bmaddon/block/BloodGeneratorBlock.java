@@ -6,8 +6,8 @@ import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -24,7 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class BloodGeneratorBlock extends BaseEntityBlock {
-    public static final MapCodec<BloodGeneratorBlock> CODEC = MapCodec.unit(() -> new BloodGeneratorBlock(Properties.of()));
+    public static final MapCodec<BloodGeneratorBlock> CODEC = simpleCodec(BloodGeneratorBlock::new);
     private static final VoxelShape SHAPE = box(
             0.0D,
             0.0D,
@@ -92,12 +92,12 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
         );
     }
 
-    public InteractionResult use(
+    @Override
+    protected InteractionResult useWithoutItem(
             BlockState state,
             Level level,
             BlockPos pos,
             Player player,
-            InteractionHand hand,
             BlockHitResult hit
     ) {
         if (level.isClientSide()) {
@@ -108,7 +108,10 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
 
         if (blockEntity instanceof BloodGeneratorBlockEntity bloodGenerator && player instanceof ServerPlayer serverPlayer) {
             BMAddonNetwork.sendConfigToPlayer(serverPlayer);
-            serverPlayer.openMenu(bloodGenerator, pos);
+            serverPlayer.openMenu(
+                    new SimpleMenuProvider(bloodGenerator::createMenu, bloodGenerator.getDisplayName()),
+                    pos
+            );
             return InteractionResult.CONSUME;
         }
 

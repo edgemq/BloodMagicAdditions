@@ -2,13 +2,5 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "bmaddon:item/blood_altar_pattern"
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "bmaddon:encoded": 1.0
-      },
-      "model": "bmaddon:item/blood_altar_pattern_encoded"
-    }
-  ]
+  }
 }

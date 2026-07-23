@@ -1,13 +1,15 @@
 package com.edgemq.bmaddon.registry;
 
 import com.edgemq.bmaddon.BMAddon;
+import com.edgemq.bmaddon.item.BMAddonBlockItem;
 import com.edgemq.bmaddon.item.BloodAltarParallelCardItem;
 import com.edgemq.bmaddon.item.BloodAltarPatternItem;
 import com.edgemq.bmaddon.item.BloodAltarTierCardItem;
 import com.edgemq.bmaddon.item.BloodMagicSpeedCardItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,47 +26,55 @@ public final class BMAddonItems {
 
     public static final DeferredHolder<Item, Item> BLOOD_GENERATOR = ITEMS.register(
             "blood_generator",
-            () -> new BlockItem(BMAddonBlocks.BLOOD_GENERATOR.get(), new Item.Properties())
+            () -> new BMAddonBlockItem(
+                    BMAddonBlocks.BLOOD_GENERATOR.get(),
+                    itemProperties("blood_generator"),
+                    "tooltip.bmaddon.blood_generator.description"
+            )
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_ASSEMBLER = ITEMS.register(
             "blood_altar_assembler",
-            () -> new BlockItem(BMAddonBlocks.BLOOD_ALTAR_ASSEMBLER.get(), new Item.Properties())
+            () -> new BMAddonBlockItem(
+                    BMAddonBlocks.BLOOD_ALTAR_ASSEMBLER.get(),
+                    itemProperties("blood_altar_assembler"),
+                    "tooltip.bmaddon.blood_altar_assembler.description"
+            )
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_PATTERN = ITEMS.register(
             "blood_altar_pattern",
-            () -> new BloodAltarPatternItem(new Item.Properties())
+            () -> new BloodAltarPatternItem(itemProperties("blood_altar_pattern"))
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_TIER_CARD_2 = ITEMS.register(
             "blood_altar_tier_card_2",
-            () -> new BloodAltarTierCardItem(2, new Item.Properties())
+            () -> new BloodAltarTierCardItem(2, itemProperties("blood_altar_tier_card_2"))
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_TIER_CARD_3 = ITEMS.register(
             "blood_altar_tier_card_3",
-            () -> new BloodAltarTierCardItem(3, new Item.Properties())
+            () -> new BloodAltarTierCardItem(3, itemProperties("blood_altar_tier_card_3"))
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_TIER_CARD_4 = ITEMS.register(
             "blood_altar_tier_card_4",
-            () -> new BloodAltarTierCardItem(4, new Item.Properties())
+            () -> new BloodAltarTierCardItem(4, itemProperties("blood_altar_tier_card_4"))
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_TIER_CARD_5 = ITEMS.register(
             "blood_altar_tier_card_5",
-            () -> new BloodAltarTierCardItem(5, new Item.Properties())
+            () -> new BloodAltarTierCardItem(5, itemProperties("blood_altar_tier_card_5"))
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_PARALLEL_CARD = ITEMS.register(
             "blood_altar_parallel_card",
-            () -> new BloodAltarParallelCardItem(new Item.Properties())
+            () -> new BloodAltarParallelCardItem(itemProperties("blood_altar_parallel_card"))
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_MAGIC_SPEED_CARD = ITEMS.register(
             "blood_magic_speed_card",
-            () -> new BloodMagicSpeedCardItem(new Item.Properties())
+            () -> new BloodMagicSpeedCardItem(itemProperties("blood_magic_speed_card"))
     );
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = CREATIVE_MODE_TABS.register(
@@ -79,7 +89,6 @@ public final class BMAddonItems {
                         output.accept(BLOOD_ALTAR_TIER_CARD_2.get());
                         output.accept(BLOOD_ALTAR_TIER_CARD_3.get());
                         output.accept(BLOOD_ALTAR_TIER_CARD_4.get());
-                        output.accept(BLOOD_ALTAR_TIER_CARD_5.get());
                         output.accept(BLOOD_ALTAR_PARALLEL_CARD.get());
                         output.accept(BLOOD_MAGIC_SPEED_CARD.get());
                     })
@@ -108,6 +117,11 @@ public final class BMAddonItems {
 
     public static boolean isBloodMagicSpeedCard(ItemStack stack) {
         return !stack.isEmpty() && stack.is(BLOOD_MAGIC_SPEED_CARD.get());
+    }
+
+    private static Item.Properties itemProperties(String name) {
+        return new Item.Properties()
+                .setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(BMAddon.MODID, name)));
     }
 
     public static void register(IEventBus eventBus) {

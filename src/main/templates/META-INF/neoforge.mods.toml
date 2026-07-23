@@ -57,6 +57,9 @@ authors="${mod_authors}" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''${mod_description}'''
 
+[[mixins]]
+config="${mod_id}.mixins.json"
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"
@@ -81,7 +84,7 @@ side="BOTH"
 [[dependencies.${mod_id}]]
 modId="ae2"
 type="required"
-versionRange="[26.1.10,27.0.0)"
+versionRange="[26.1.10-beta,27.0.0)"
 ordering="AFTER"
 side="BOTH"
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares

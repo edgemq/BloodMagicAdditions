@@ -1,6 +1,7 @@
 package com.edgemq.bmaddon;
 
 import com.edgemq.bmaddon.config.BMAddonCommonConfig;
+import com.edgemq.bmaddon.event.BMAddonModEvents;
 import com.edgemq.bmaddon.network.BMAddonNetwork;
 import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
 import com.edgemq.bmaddon.registry.BMAddonBlocks;
@@ -23,6 +24,7 @@ public class BMAddon {
         BMAddonItems.register(modEventBus);
         BMAddonBlockEntities.register(modEventBus);
         BMAddonMenus.register(modEventBus);
+        modEventBus.addListener(BMAddonModEvents::registerCapabilities);
 
         BMAddonNetwork.register();
 

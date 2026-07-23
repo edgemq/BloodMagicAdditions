@@ -1,8 +1,6 @@
-﻿{
+{
     "type":  "neovitae:ara_vitae_recipe",
-    "input":  {
-                  "item":  "ae2:speed_card"
-              },
+    "input":  "ae2:speed_card",
     "output":  {
                    "id":  "bmaddon:blood_magic_speed_card"
                },

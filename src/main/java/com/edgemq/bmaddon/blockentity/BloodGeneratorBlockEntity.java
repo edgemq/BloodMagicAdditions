@@ -6,7 +6,6 @@ import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
 import com.edgemq.bmaddon.util.BloodMagicFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.MenuProvider;
@@ -17,10 +16,20 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +44,8 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
     public static final int DATA_COUNT = 4;
 
     private final GeneratorEnergyStorage energyStorage = new GeneratorEnergyStorage();
+    private final FluidTransactionJournal fluidTransactionJournal = new FluidTransactionJournal();
+    private final ResourceHandler<FluidResource> transferFluidHandler = new OutputOnlyTransferFluidHandler();
 
     private final FluidTank bloodTank = new FluidTank(
             BMAddonCommonConfig.BLOOD_GENERATOR_LIFE_TANK_CAPACITY.get()
@@ -95,16 +106,27 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
     private void tryGenerateLifeEssence() {
         int configuredEnergyCost = BMAddonCommonConfig.BLOOD_GENERATOR_ENERGY_PER_OPERATION.get();
         int configuredLifeAmount = BMAddonCommonConfig.BLOOD_GENERATOR_LIFE_ESSENCE_PER_OPERATION.get();
+        int storedEnergy = energyStorage.getEnergyStored();
 
         if (configuredEnergyCost <= 0 || configuredLifeAmount <= 0) {
             return;
         }
 
-        if (energyStorage.getEnergyStored() <= 0) {
+        if (storedEnergy <= 0) {
             return;
         }
 
-        FluidStack requestedGeneration = BloodMagicFluidHelper.lifeEssenceStack(configuredLifeAmount);
+        int energyLimitedLifeAmount = calculateLifeAmountForEnergy(
+                configuredEnergyCost,
+                configuredLifeAmount,
+                storedEnergy
+        );
+
+        if (energyLimitedLifeAmount <= 0) {
+            return;
+        }
+
+        FluidStack requestedGeneration = BloodMagicFluidHelper.lifeEssenceStack(energyLimitedLifeAmount);
         int acceptedLifeAmount = bloodTank.fill(requestedGeneration, IFluidHandler.FluidAction.SIMULATE);
 
         if (acceptedLifeAmount <= 0) {
@@ -117,7 +139,7 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
                 acceptedLifeAmount
         );
 
-        if (energyStorage.getEnergyStored() < actualEnergyCost) {
+        if (storedEnergy < actualEnergyCost) {
             return;
         }
 
@@ -144,7 +166,78 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
         return Math.max(1, calculatedCost);
     }
 
+    private int calculateLifeAmountForEnergy(
+            int configuredEnergyCost,
+            int configuredLifeAmount,
+            int storedEnergy
+    ) {
+        if (storedEnergy >= configuredEnergyCost) {
+            return configuredLifeAmount;
+        }
+
+        long scaledLifeAmount = (long) storedEnergy * (long) configuredLifeAmount;
+
+        return (int) Math.min(configuredLifeAmount, scaledLifeAmount / configuredEnergyCost);
+    }
+
     private void tryAutoOutputFluid() {
+        if (level == null || level.isClientSide()) {
+            return;
+        }
+
+        if (!BMAddonCommonConfig.BLOOD_GENERATOR_AUTO_OUTPUT.get()) {
+            return;
+        }
+
+        if (bloodTank.isEmpty()) {
+            return;
+        }
+
+        int maxOutput = BMAddonCommonConfig.BLOOD_GENERATOR_MAX_FLUID_OUTPUT_PER_TICK.get();
+
+        for (Direction direction : Direction.values()) {
+            if (bloodTank.isEmpty()) {
+                return;
+            }
+
+            BlockPos targetPos = worldPosition.relative(direction);
+            ResourceHandler<FluidResource> handler = level.getCapability(
+                    Capabilities.Fluid.BLOCK,
+                    targetPos,
+                    direction.getOpposite()
+            );
+
+            if (handler == null) {
+                continue;
+            }
+
+            FluidStack simulatedDrain = bloodTank.drain(maxOutput, IFluidHandler.FluidAction.SIMULATE);
+
+            if (simulatedDrain.isEmpty()) {
+                return;
+            }
+
+            FluidResource resource = FluidResource.of(simulatedDrain);
+            int accepted;
+
+            try (Transaction transaction = Transaction.openRoot()) {
+                accepted = handler.insert(resource, simulatedDrain.getAmount(), transaction);
+
+                if (accepted <= 0) {
+                    continue;
+                }
+
+                FluidStack actualDrain = bloodTank.drain(accepted, IFluidHandler.FluidAction.EXECUTE);
+
+                if (actualDrain.isEmpty()) {
+                    continue;
+                }
+
+                transaction.commit();
+            }
+
+            setChangedAndSync();
+        }
     }
 
     public int getEnergyStored() {
@@ -216,73 +309,209 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+
+        output.putInt(TAG_ENERGY, getEnergyStored());
+        bloodTank.serialize(output.child(TAG_BLOOD_TANK));
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+
+        energyStorage.setEnergyStored(input.getIntOr(TAG_ENERGY, 0));
+        input.child(TAG_BLOOD_TANK).ifPresent(bloodTank::deserialize);
+        updateTankCapacityFromConfig();
+    }
+
     public IEnergyStorage getEnergyHandler(@Nullable Direction side) {
-        return energyStorage;
+        return energyStorage.oldEnergyStorage;
     }
 
     public IFluidHandler getFluidHandler(@Nullable Direction side) {
         return externalFluidHandler;
     }
 
-    private final class GeneratorEnergyStorage implements IEnergyStorage {
-        private int energy;
+    public EnergyHandler getTransferEnergyHandler(@Nullable Direction side) {
+        return energyStorage;
+    }
+
+    public ResourceHandler<FluidResource> getTransferFluidHandler(@Nullable Direction side) {
+        return transferFluidHandler;
+    }
+
+    private final class OutputOnlyTransferFluidHandler implements ResourceHandler<FluidResource> {
+        @Override
+        public int size() {
+            return 1;
+        }
 
         @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            if (maxReceive <= 0) {
+        public FluidResource getResource(int slot) {
+            if (slot != 0 || bloodTank.isEmpty()) {
+                return FluidResource.EMPTY;
+            }
+
+            return FluidResource.of(bloodTank.getFluid());
+        }
+
+        @Override
+        public long getAmountAsLong(int slot) {
+            return slot == 0 ? bloodTank.getFluidAmount() : 0;
+        }
+
+        @Override
+        public long getCapacityAsLong(int slot, FluidResource resource) {
+            return slot == 0 && isLifeEssence(resource) ? bloodTank.getCapacity() : 0;
+        }
+
+        @Override
+        public boolean isValid(int slot, FluidResource resource) {
+            return false;
+        }
+
+        @Override
+        public int insert(int slot, FluidResource resource, int amount, TransactionContext transaction) {
+            return 0;
+        }
+
+        @Override
+        public int extract(int slot, FluidResource resource, int amount, TransactionContext transaction) {
+            if (slot != 0 || amount <= 0 || !isLifeEssence(resource)) {
                 return 0;
             }
 
-            int capacity = getMaxEnergyStored();
-            int maxInput = BMAddonCommonConfig.BLOOD_GENERATOR_MAX_ENERGY_INPUT.get();
-            int accepted = Math.min(maxReceive, maxInput);
-            int inserted = Math.min(accepted, capacity - energy);
+            FluidStack simulatedDrain = bloodTank.drain(amount, IFluidHandler.FluidAction.SIMULATE);
 
-            if (inserted <= 0) {
+            if (simulatedDrain.isEmpty()) {
                 return 0;
             }
 
-            if (!simulate) {
-                energy += inserted;
+            fluidTransactionJournal.updateSnapshots(transaction);
+
+            return bloodTank.drain(simulatedDrain.getAmount(), IFluidHandler.FluidAction.EXECUTE).getAmount();
+        }
+
+        private boolean isLifeEssence(FluidResource resource) {
+            return resource != null && resource.getFluid() == BloodMagicFluidHelper.lifeEssenceFluid();
+        }
+    }
+
+    private final class FluidTransactionJournal extends SnapshotJournal<FluidStack> {
+        @Override
+        protected FluidStack createSnapshot() {
+            return bloodTank.getFluid().copy();
+        }
+
+        @Override
+        protected void revertToSnapshot(FluidStack snapshot) {
+            bloodTank.setFluid(snapshot.copy());
+            setChangedAndSync();
+        }
+    }
+
+    private final class GeneratorEnergyStorage extends SimpleEnergyHandler {
+        private final IEnergyStorage oldEnergyStorage = new LegacyEnergyStorageView();
+
+        private GeneratorEnergyStorage() {
+            super(
+                    BMAddonCommonConfig.BLOOD_GENERATOR_ENERGY_CAPACITY.get(),
+                    BMAddonCommonConfig.BLOOD_GENERATOR_MAX_ENERGY_INPUT.get(),
+                    0
+            );
+        }
+
+        @Override
+        public long getCapacityAsLong() {
+            refreshLimitsFromConfig();
+            return BMAddonCommonConfig.BLOOD_GENERATOR_ENERGY_CAPACITY.get();
+        }
+
+        @Override
+        public int insert(int amount, TransactionContext transaction) {
+            refreshLimitsFromConfig();
+            int inserted = super.insert(
+                    Math.min(amount, BMAddonCommonConfig.BLOOD_GENERATOR_MAX_ENERGY_INPUT.get()),
+                    transaction
+            );
+
+            if (inserted > 0) {
                 setChangedAndSync();
             }
 
             return inserted;
         }
 
-        @Override
-        public int extractEnergy(int maxExtract, boolean simulate) {
-            return 0;
-        }
+        private void refreshLimitsFromConfig() {
+            capacity = BMAddonCommonConfig.BLOOD_GENERATOR_ENERGY_CAPACITY.get();
+            maxInsert = BMAddonCommonConfig.BLOOD_GENERATOR_MAX_ENERGY_INPUT.get();
 
-        @Override
-        public int getEnergyStored() {
-            return energy;
-        }
-
-        @Override
-        public int getMaxEnergyStored() {
-            return BMAddonCommonConfig.BLOOD_GENERATOR_ENERGY_CAPACITY.get();
-        }
-
-        @Override
-        public boolean canExtract() {
-            return false;
-        }
-
-        @Override
-        public boolean canReceive() {
-            return true;
+            if (energy > capacity) {
+                energy = capacity;
+            }
         }
 
         private void consumeInternal(int amount) {
-            energy = Math.max(0, energy - amount);
+            set(Math.max(0, getAmountAsInt() - amount));
             setChangedAndSync();
         }
 
         private void setEnergyStored(int amount) {
-            energy = Math.max(0, Math.min(amount, getMaxEnergyStored()));
+            set(Math.max(0, Math.min(amount, getMaxEnergyStored())));
             setChanged();
+        }
+
+        private int getEnergyStored() {
+            return getAmountAsInt();
+        }
+
+        private int getMaxEnergyStored() {
+            return (int) Math.min(Integer.MAX_VALUE, getCapacityAsLong());
+        }
+
+        private final class LegacyEnergyStorageView implements IEnergyStorage {
+            @Override
+            public int receiveEnergy(int maxReceive, boolean simulate) {
+                if (simulate) {
+                    return Math.min(
+                            Math.min(maxReceive, BMAddonCommonConfig.BLOOD_GENERATOR_MAX_ENERGY_INPUT.get()),
+                            getMaxEnergyStored() - getEnergyStored()
+                    );
+                }
+
+                try (Transaction transaction = Transaction.openRoot()) {
+                    int inserted = GeneratorEnergyStorage.this.insert(maxReceive, transaction);
+                    transaction.commit();
+                    return inserted;
+                }
+            }
+
+            @Override
+            public int extractEnergy(int maxExtract, boolean simulate) {
+                return 0;
+            }
+
+            @Override
+            public int getEnergyStored() {
+                return GeneratorEnergyStorage.this.getEnergyStored();
+            }
+
+            @Override
+            public int getMaxEnergyStored() {
+                return GeneratorEnergyStorage.this.getMaxEnergyStored();
+            }
+
+            @Override
+            public boolean canExtract() {
+                return false;
+            }
+
+            @Override
+            public boolean canReceive() {
+                return true;
+            }
         }
     }
 

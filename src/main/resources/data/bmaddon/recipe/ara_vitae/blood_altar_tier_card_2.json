@@ -1,8 +1,6 @@
-﻿{
+{
     "type":  "neovitae:ara_vitae_recipe",
-    "input":  {
-                  "item":  "neovitae:rune_capacity"
-              },
+    "input":  "neovitae:rune_capacity",
     "output":  {
                    "id":  "bmaddon:blood_altar_tier_card_2"
                },

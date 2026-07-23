@@ -2,6 +2,7 @@ package com.edgemq.bmaddon.item;
 
 import com.breakinblocks.neovitae.api.recipe.AraVitaeRecipe;
 import com.breakinblocks.neovitae.common.recipe.tabulavitae.TabulaVitaeRecipe;
+import com.edgemq.bmaddon.BMAddon;
 import com.edgemq.bmaddon.ae2.BloodMagicPatternKind;
 import com.edgemq.bmaddon.util.BloodAltarRecipeHelper;
 import net.minecraft.ChatFormatting;
@@ -40,6 +41,10 @@ public class BloodAltarPatternItem extends Item {
      * Новые шаблоны его больше не пишут и код его больше не использует.
      */
     private static final String TAG_CRAFT_TIME_TICKS = "CraftTimeTicks";
+    private static final Identifier ENCODED_ITEM_MODEL = Identifier.fromNamespaceAndPath(
+            BMAddon.MODID,
+            "blood_altar_pattern_encoded"
+    );
 
     public BloodAltarPatternItem(Properties properties) {
         super(properties);
@@ -284,7 +289,7 @@ public class BloodAltarPatternItem extends Item {
     }
 
     public static int getStoredAltarTierForDisplay(ItemStack stack) {
-        return getStoredMinimumTier(stack) + 1;
+        return getStoredMinimumTier(stack);
     }
 
     public static int getStoredSyphon(ItemStack stack) {
@@ -398,6 +403,7 @@ public class BloodAltarPatternItem extends Item {
         tag.putInt(TAG_DRAIN_RATE, drainRate);
         tag.remove(TAG_CRAFT_TIME_TICKS);
         setCustomTag(patternStack, tag);
+        patternStack.set(DataComponents.ITEM_MODEL, ENCODED_ITEM_MODEL);
     }
 
     @Nullable
@@ -453,5 +459,6 @@ public class BloodAltarPatternItem extends Item {
         tag.remove(TAG_DRAIN_RATE);
         tag.remove(TAG_CRAFT_TIME_TICKS);
         setCustomTag(stack, tag);
+        stack.remove(DataComponents.ITEM_MODEL);
     }
 }

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(targets = "appeng.menu.slot.RestrictedInputSlot")
+@Mixin(value = RestrictedInputSlot.class, remap = false)
 public abstract class RestrictedInputSlotMixin {
     @Shadow(remap = false)
     @Final
@@ -19,7 +19,7 @@ public abstract class RestrictedInputSlotMixin {
 
     @Inject(
             method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z",
-            at = @At("RETURN"),
+            at = @At("HEAD"),
             cancellable = true,
             remap = false
     )
@@ -27,17 +27,15 @@ public abstract class RestrictedInputSlotMixin {
             ItemStack stack,
             CallbackInfoReturnable<Boolean> callback
     ) {
-        if (callback.getReturnValue()) {
-            return;
-        }
-
         if (which == RestrictedInputSlot.PlacableItemType.BLANK_PATTERN && isBlankBloodAltarPattern(stack)) {
             callback.setReturnValue(true);
+            callback.cancel();
             return;
         }
 
         if (which == RestrictedInputSlot.PlacableItemType.ENCODED_PATTERN && isBloodAltarPattern(stack)) {
             callback.setReturnValue(true);
+            callback.cancel();
         }
     }
 

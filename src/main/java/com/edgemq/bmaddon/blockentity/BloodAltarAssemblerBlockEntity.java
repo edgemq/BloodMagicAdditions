@@ -6,6 +6,7 @@ import appeng.api.crafting.IPatternDetails;
 import appeng.api.implementations.IPowerChannelState;
 import appeng.api.inventories.ISegmentedInventory;
 import appeng.api.inventories.InternalInventory;
+import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.IGridNodeListener;
@@ -28,16 +29,13 @@ import com.edgemq.bmaddon.ae2.BloodAltarPatternDetails;
 import com.edgemq.bmaddon.ae2.BloodMagicPatternKind;
 import com.edgemq.bmaddon.config.BMAddonCommonConfig;
 import com.edgemq.bmaddon.item.BloodAltarPatternItem;
+import com.edgemq.bmaddon.item.BloodMagicSpeedCardItem;
 import com.edgemq.bmaddon.menu.BloodAltarAssemblerMenu;
 import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
 import com.edgemq.bmaddon.registry.BMAddonItems;
 import com.edgemq.bmaddon.util.BloodAltarRecipeHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
@@ -47,6 +45,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -70,6 +70,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
     public static final int PATTERN_SLOT_COUNT = 9;
     public static final int UPGRADE_SLOT_COUNT = 9;
     public static final int BASE_ALTAR_TIER = 1;
+    public static final int MAX_ALTAR_TIER = 4;
 
     private final AppEngInternalInventory patternInventory = new AppEngInternalInventory(
             this,
@@ -98,6 +99,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
         super(BMAddonBlockEntities.BLOOD_ALTAR_ASSEMBLER.get(), pos, state);
 
         this.getMainNode()
+                .setFlags(GridFlags.REQUIRE_CHANNEL)
                 .setIdlePowerUsage(1.0D)
                 .setVisualRepresentation(BMAddonItems.BLOOD_ALTAR_ASSEMBLER.get())
                 .addService(ICraftingProvider.class, this)
@@ -130,21 +132,36 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
             }
         }
 
-        return tier;
+        return Math.min(MAX_ALTAR_TIER, tier);
     }
 
     public int getBloodMagicRecipeTierLimit() {
-        return Math.max(0, getAltarTier() - 1);
+        return getAltarTier();
     }
 
     public int getAccelerationCardCount() {
+        return getVanillaSpeedCardCount()
+                + getBloodMagicSpeedCardCount() * BloodMagicSpeedCardItem.SPEED_CARD_EQUIVALENT;
+    }
+
+    private int getVanillaSpeedCardCount() {
         int count = 0;
 
         for (ItemStack stack : upgrades) {
             if (stack.is(AEItems.SPEED_CARD.asItem())) {
                 count += stack.getCount();
-            } else if (BMAddonItems.isBloodMagicSpeedCard(stack)) {
-                count += stack.getCount() * 2;
+            }
+        }
+
+        return count;
+    }
+
+    private int getBloodMagicSpeedCardCount() {
+        int count = 0;
+
+        for (ItemStack stack : upgrades) {
+            if (BMAddonItems.isBloodMagicSpeedCard(stack)) {
+                count += stack.getCount();
             }
         }
 
@@ -498,7 +515,9 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
     private int calculateCraftTimeTicks(int recipeBaseCraftTimeTicks) {
         int configuredBaseTime = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_BASE_CRAFT_TIME_TICKS.get();
         int baseTime = recipeBaseCraftTimeTicks > 0 ? recipeBaseCraftTimeTicks : configuredBaseTime;
-        int minTime = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_MIN_CRAFT_TIME_TICKS.get();
+        int minTime = getBloodMagicSpeedCardCount() > 0
+                ? 1
+                : BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_MIN_CRAFT_TIME_TICKS.get();
         int speedCards = getAccelerationCardCount();
 
         int calculated = baseTime / Math.max(1, 1 + speedCards);
@@ -616,6 +635,73 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
     @Override
     public boolean isActive() {
         return powered;
+    }
+
+    @Override
+    public void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+
+        patternInventory.writeToNBT(output, TAG_PATTERNS);
+        upgrades.writeToNBT(output, TAG_UPGRADES);
+
+        ValueOutput.ValueOutputList activeCraftList = output.childrenList(TAG_ACTIVE_CRAFTS);
+
+        for (ActiveCraft craft : activeCrafts) {
+            ValueOutput craftOutput = activeCraftList.addChild();
+
+            craftOutput.putString(TAG_CRAFT_RECIPE_KIND, craft.kind.getSerializedName());
+            craftOutput.putString(TAG_CRAFT_RECIPE_ID, craft.recipeId.toString());
+
+            if (craft.output != null) {
+                GenericStack.writeTag(craftOutput.child(TAG_CRAFT_OUTPUT), craft.output);
+            }
+
+            craftOutput.putInt(TAG_CRAFT_PROGRESS_TICKS, craft.progressTicks);
+            craftOutput.putInt(TAG_CRAFT_TIME_TICKS, craft.craftTimeTicks);
+            craftOutput.putBoolean(TAG_CRAFT_PENDING_OUTPUT, craft.pendingOutput);
+        }
+    }
+
+    @Override
+    public void loadTag(ValueInput input) {
+        super.loadTag(input);
+
+        patternInventory.readFromNBT(input, TAG_PATTERNS);
+        upgrades.readFromNBT(input, TAG_UPGRADES);
+
+        activeCrafts.clear();
+
+        for (ValueInput craftInput : input.childrenListOrEmpty(TAG_ACTIVE_CRAFTS)) {
+            BloodMagicPatternKind kind = BloodMagicPatternKind.byName(
+                    craftInput.getStringOr(TAG_CRAFT_RECIPE_KIND, "")
+            );
+            Identifier recipeId = Identifier.tryParse(craftInput.getStringOr(TAG_CRAFT_RECIPE_ID, ""));
+
+            if (recipeId == null) {
+                continue;
+            }
+
+            GenericStack output = craftInput.child(TAG_CRAFT_OUTPUT)
+                    .map(GenericStack::readTag)
+                    .orElse(null);
+
+            if (output == null || output.amount() <= 0) {
+                continue;
+            }
+
+            int progressTicks = Math.max(0, craftInput.getIntOr(TAG_CRAFT_PROGRESS_TICKS, 0));
+            int craftTimeTicks = Math.max(1, craftInput.getIntOr(TAG_CRAFT_TIME_TICKS, 1));
+            boolean pendingOutput = craftInput.getBooleanOr(TAG_CRAFT_PENDING_OUTPUT, false);
+
+            activeCrafts.add(new ActiveCraft(
+                    kind,
+                    recipeId,
+                    output,
+                    progressTicks,
+                    craftTimeTicks,
+                    pendingOutput
+            ));
+        }
     }
 
     @Override

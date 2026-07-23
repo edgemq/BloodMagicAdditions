@@ -6,12 +6,8 @@
     " A "
   ],
   "key": {
-    "A": {
-      "item": "neovitae:weak_blood_shard"
-    },
-    "C": {
-      "item": "ae2:blank_pattern"
-    }
+    "A": "neovitae:weak_blood_shard",
+    "C": "ae2:blank_pattern"
   },
   "result": {
     "id": "bmaddon:blood_altar_pattern",
