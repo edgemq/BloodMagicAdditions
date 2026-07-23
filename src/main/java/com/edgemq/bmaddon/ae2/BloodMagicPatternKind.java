@@ -3,8 +3,8 @@ package com.edgemq.bmaddon.ae2;
 import java.util.Locale;
 
 public enum BloodMagicPatternKind {
-    BLOOD_ALTAR("blood_altar"),
-    ALCHEMY_TABLE("alchemy_table");
+    BLOOD_ALTAR("ara_vitae"),
+    ALCHEMY_TABLE("tabula_vitae");
 
     private final String serializedName;
 
@@ -22,6 +22,14 @@ public enum BloodMagicPatternKind {
         }
 
         String normalized = name.toLowerCase(Locale.ROOT);
+
+        if ("blood_altar".equals(normalized)) {
+            return BLOOD_ALTAR;
+        }
+
+        if ("alchemy_table".equals(normalized)) {
+            return ALCHEMY_TABLE;
+        }
 
         for (BloodMagicPatternKind kind : values()) {
             if (kind.serializedName.equals(normalized)) {

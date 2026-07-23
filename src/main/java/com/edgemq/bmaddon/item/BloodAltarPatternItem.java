@@ -1,22 +1,24 @@
 package com.edgemq.bmaddon.item;
 
+import com.breakinblocks.neovitae.api.recipe.AraVitaeRecipe;
+import com.breakinblocks.neovitae.common.recipe.tabulavitae.TabulaVitaeRecipe;
 import com.edgemq.bmaddon.ae2.BloodMagicPatternKind;
 import com.edgemq.bmaddon.util.BloodAltarRecipeHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.recipe.RecipeAlchemyTable;
-import wayoftime.bloodmagic.recipe.RecipeBloodAltar;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -52,35 +54,28 @@ public class BloodAltarPatternItem extends Item {
         return super.getMaxStackSize(stack);
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (!player.isShiftKeyDown()) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
 
         if (level.isClientSide()) {
-            return InteractionResultHolder.sidedSuccess(stack, true);
+            return InteractionResult.SUCCESS;
         }
 
         if (!isEncoded(stack)) {
-            player.displayClientMessage(
-                    Component.translatable("message.bmaddon.blood_altar_pattern.already_empty"),
-                    true
-            );
+            player.sendOverlayMessage(Component.translatable("message.bmaddon.blood_altar_pattern.already_empty"));
 
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
 
         clear(stack);
 
-        player.displayClientMessage(
-                Component.translatable("message.bmaddon.blood_altar_pattern.cleared"),
-                true
-        );
+        player.sendOverlayMessage(Component.translatable("message.bmaddon.blood_altar_pattern.cleared"));
 
-        return InteractionResultHolder.sidedSuccess(stack, false);
+        return InteractionResult.SUCCESS_SERVER;
     }
 
     @Override
@@ -101,7 +96,6 @@ public class BloodAltarPatternItem extends Item {
         return super.getName(stack);
     }
 
-    @Override
     public void appendHoverText(
             ItemStack stack,
             @Nullable Level level,
@@ -114,7 +108,7 @@ public class BloodAltarPatternItem extends Item {
             return;
         }
 
-        ResourceLocation recipeId = getRecipeId(stack);
+        Identifier recipeId = getRecipeId(stack);
 
         if (recipeId == null) {
             tooltip.add(Component.translatable("tooltip.bmaddon.blood_altar_pattern.invalid").withStyle(ChatFormatting.RED));
@@ -184,7 +178,7 @@ public class BloodAltarPatternItem extends Item {
             ItemStack stack,
             @Nullable Level level,
             BloodMagicPatternKind kind,
-            ResourceLocation recipeId
+            Identifier recipeId
     ) {
         if (level != null) {
             ItemStack recipeOutput = BloodAltarRecipeHelper.getOutputPreview(level, kind, recipeId);
@@ -198,32 +192,32 @@ public class BloodAltarPatternItem extends Item {
     }
 
     public static boolean isEncoded(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         return tag != null
                 && tag.contains(TAG_RECIPE_ID)
-                && BloodAltarRecipeHelper.parseRecipeId(tag.getString(TAG_RECIPE_ID)) != null;
+                && BloodAltarRecipeHelper.parseRecipeId(tag.getStringOr(TAG_RECIPE_ID, "")) != null;
     }
 
     public static BloodMagicPatternKind getRecipeKind(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null || !tag.contains(TAG_RECIPE_KIND)) {
             return BloodMagicPatternKind.BLOOD_ALTAR;
         }
 
-        return BloodMagicPatternKind.byName(tag.getString(TAG_RECIPE_KIND));
+        return BloodMagicPatternKind.byName(tag.getStringOr(TAG_RECIPE_KIND, ""));
     }
 
     @Nullable
-    public static ResourceLocation getRecipeId(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+    public static Identifier getRecipeId(ItemStack stack) {
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null || !tag.contains(TAG_RECIPE_ID)) {
             return null;
         }
 
-        return BloodAltarRecipeHelper.parseRecipeId(tag.getString(TAG_RECIPE_ID));
+        return BloodAltarRecipeHelper.parseRecipeId(tag.getStringOr(TAG_RECIPE_ID, ""));
     }
 
     public static ItemStack getInputPreview(ItemStack stack) {
@@ -237,18 +231,18 @@ public class BloodAltarPatternItem extends Item {
     }
 
     public static List<ItemStack> getInputPreviews(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null) {
             return List.of();
         }
 
-        if (tag.contains(TAG_INPUT_PREVIEWS, Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList(TAG_INPUT_PREVIEWS, Tag.TAG_COMPOUND);
+        if (tag.contains(TAG_INPUT_PREVIEWS)) {
+            ListTag listTag = tag.getListOrEmpty(TAG_INPUT_PREVIEWS);
             List<ItemStack> inputs = new ArrayList<>();
 
             for (int index = 0; index < listTag.size(); index++) {
-                ItemStack input = ItemStack.of(listTag.getCompound(index));
+                ItemStack input = itemFromTag(listTag.getCompoundOrEmpty(index));
 
                 if (!input.isEmpty()) {
                     inputs.add(input);
@@ -258,8 +252,8 @@ public class BloodAltarPatternItem extends Item {
             return inputs;
         }
 
-        if (tag.contains(TAG_INPUT_PREVIEW, Tag.TAG_COMPOUND)) {
-            ItemStack oldInput = ItemStack.of(tag.getCompound(TAG_INPUT_PREVIEW));
+        if (tag.contains(TAG_INPUT_PREVIEW)) {
+            ItemStack oldInput = itemFromTag(tag.getCompoundOrEmpty(TAG_INPUT_PREVIEW));
 
             if (!oldInput.isEmpty()) {
                 return List.of(oldInput);
@@ -270,23 +264,23 @@ public class BloodAltarPatternItem extends Item {
     }
 
     public static ItemStack getOutputPreview(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null || !tag.contains(TAG_OUTPUT_PREVIEW)) {
             return ItemStack.EMPTY;
         }
 
-        return ItemStack.of(tag.getCompound(TAG_OUTPUT_PREVIEW));
+        return itemFromTag(tag.getCompoundOrEmpty(TAG_OUTPUT_PREVIEW));
     }
 
     public static int getStoredMinimumTier(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null) {
             return 0;
         }
 
-        return tag.getInt(TAG_MINIMUM_TIER);
+        return tag.getIntOr(TAG_MINIMUM_TIER, 0);
     }
 
     public static int getStoredAltarTierForDisplay(ItemStack stack) {
@@ -294,53 +288,53 @@ public class BloodAltarPatternItem extends Item {
     }
 
     public static int getStoredSyphon(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null) {
             return 0;
         }
 
-        return tag.getInt(TAG_SYPHON);
+        return tag.getIntOr(TAG_SYPHON, 0);
     }
 
     public static int getStoredConsumeRate(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null) {
             return 0;
         }
 
-        return tag.getInt(TAG_CONSUME_RATE);
+        return tag.getIntOr(TAG_CONSUME_RATE, 0);
     }
 
     public static int getStoredDrainRate(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = getCustomTag(stack);
 
         if (tag == null) {
             return 0;
         }
 
-        return tag.getInt(TAG_DRAIN_RATE);
+        return tag.getIntOr(TAG_DRAIN_RATE, 0);
     }
 
-    public static void encode(ItemStack patternStack, RecipeBloodAltar recipe, ItemStack inputPreview) {
+    public static void encode(ItemStack patternStack, Identifier recipeId, AraVitaeRecipe recipe, ItemStack inputPreview) {
         ItemStack storedInputPreview = inputPreview.copy();
         storedInputPreview.setCount(1);
 
         encodeInternal(
                 patternStack,
                 BloodMagicPatternKind.BLOOD_ALTAR,
-                recipe.getId(),
+                recipeId,
                 List.of(storedInputPreview),
-                recipe.getOutput().copy(),
-                recipe.getMinimumTier(),
-                recipe.getSyphon(),
-                recipe.getConsumeRate(),
-                recipe.getDrainRate()
+                recipe.getResult().copy(),
+                recipe.getMinTier(),
+                recipe.getTotalBlood(),
+                recipe.getCraftSpeed(),
+                recipe.getDrainSpeed()
         );
     }
 
-    public static void encode(ItemStack patternStack, RecipeAlchemyTable recipe, List<ItemStack> inputPreviews) {
+    public static void encode(ItemStack patternStack, Identifier recipeId, TabulaVitaeRecipe recipe, List<ItemStack> inputPreviews) {
         List<ItemStack> storedInputs = new ArrayList<>();
 
         for (ItemStack input : inputPreviews) {
@@ -356,7 +350,7 @@ public class BloodAltarPatternItem extends Item {
         encodeInternal(
                 patternStack,
                 BloodMagicPatternKind.ALCHEMY_TABLE,
-                recipe.getId(),
+                recipeId,
                 storedInputs,
                 recipe.getOutput().copy(),
                 recipe.getMinimumTier(),
@@ -369,7 +363,7 @@ public class BloodAltarPatternItem extends Item {
     private static void encodeInternal(
             ItemStack patternStack,
             BloodMagicPatternKind kind,
-            ResourceLocation recipeId,
+            Identifier recipeId,
             List<ItemStack> inputPreviews,
             ItemStack outputPreview,
             int minimumTier,
@@ -377,13 +371,13 @@ public class BloodAltarPatternItem extends Item {
             int consumeRate,
             int drainRate
     ) {
-        CompoundTag tag = patternStack.getOrCreateTag();
+        CompoundTag tag = getOrCreateCustomTag(patternStack);
 
         ListTag inputList = new ListTag();
 
         for (ItemStack inputPreview : inputPreviews) {
             if (!inputPreview.isEmpty()) {
-                inputList.add(inputPreview.save(new CompoundTag()));
+                inputList.add(itemToTag(inputPreview));
             }
         }
 
@@ -392,33 +386,72 @@ public class BloodAltarPatternItem extends Item {
         tag.put(TAG_INPUT_PREVIEWS, inputList);
 
         if (!inputPreviews.isEmpty()) {
-            tag.put(TAG_INPUT_PREVIEW, inputPreviews.get(0).save(new CompoundTag()));
+            tag.put(TAG_INPUT_PREVIEW, itemToTag(inputPreviews.get(0)));
         } else {
             tag.remove(TAG_INPUT_PREVIEW);
         }
 
-        tag.put(TAG_OUTPUT_PREVIEW, outputPreview.save(new CompoundTag()));
+        tag.put(TAG_OUTPUT_PREVIEW, itemToTag(outputPreview));
         tag.putInt(TAG_MINIMUM_TIER, minimumTier);
         tag.putInt(TAG_SYPHON, syphon);
         tag.putInt(TAG_CONSUME_RATE, consumeRate);
         tag.putInt(TAG_DRAIN_RATE, drainRate);
         tag.remove(TAG_CRAFT_TIME_TICKS);
+        setCustomTag(patternStack, tag);
+    }
+
+    @Nullable
+    private static CompoundTag getCustomTag(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data == null || data.isEmpty() ? null : data.copyTag();
+    }
+
+    private static CompoundTag getOrCreateCustomTag(ItemStack stack) {
+        CompoundTag tag = getCustomTag(stack);
+        return tag == null ? new CompoundTag() : tag;
+    }
+
+    private static void setCustomTag(ItemStack stack, CompoundTag tag) {
+        if (tag.isEmpty()) {
+            stack.remove(DataComponents.CUSTOM_DATA);
+        } else {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        }
+    }
+
+    private static CompoundTag itemToTag(ItemStack stack) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("id", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+        tag.putInt("count", stack.getCount());
+        return tag;
+    }
+
+    private static ItemStack itemFromTag(CompoundTag tag) {
+        Identifier id = Identifier.tryParse(tag.getStringOr("id", ""));
+        if (id == null) {
+            return ItemStack.EMPTY;
+        }
+
+        Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+        if (item == null) {
+            return ItemStack.EMPTY;
+        }
+
+        return new ItemStack(item, Math.max(1, tag.getIntOr("count", 1)));
     }
 
     public static void clear(ItemStack stack) {
-        stack.removeTagKey(TAG_RECIPE_KIND);
-        stack.removeTagKey(TAG_RECIPE_ID);
-        stack.removeTagKey(TAG_INPUT_PREVIEW);
-        stack.removeTagKey(TAG_INPUT_PREVIEWS);
-        stack.removeTagKey(TAG_OUTPUT_PREVIEW);
-        stack.removeTagKey(TAG_MINIMUM_TIER);
-        stack.removeTagKey(TAG_SYPHON);
-        stack.removeTagKey(TAG_CONSUME_RATE);
-        stack.removeTagKey(TAG_DRAIN_RATE);
-        stack.removeTagKey(TAG_CRAFT_TIME_TICKS);
-
-        if (stack.getTag() != null && stack.getTag().isEmpty()) {
-            stack.setTag(null);
-        }
+        CompoundTag tag = getOrCreateCustomTag(stack);
+        tag.remove(TAG_RECIPE_KIND);
+        tag.remove(TAG_RECIPE_ID);
+        tag.remove(TAG_INPUT_PREVIEW);
+        tag.remove(TAG_INPUT_PREVIEWS);
+        tag.remove(TAG_OUTPUT_PREVIEW);
+        tag.remove(TAG_MINIMUM_TIER);
+        tag.remove(TAG_SYPHON);
+        tag.remove(TAG_CONSUME_RATE);
+        tag.remove(TAG_DRAIN_RATE);
+        tag.remove(TAG_CRAFT_TIME_TICKS);
+        setCustomTag(stack, tag);
     }
 }

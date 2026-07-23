@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -42,7 +41,6 @@ public class BloodAltarAssemblerBlock extends AEBaseEntityBlock<BloodAltarAssemb
         return currentState.setValue(POWERED, blockEntity.isPowered());
     }
 
-    @Override
     public InteractionResult onActivated(
             Level level,
             BlockPos pos,
@@ -62,9 +60,9 @@ public class BloodAltarAssemblerBlock extends AEBaseEntityBlock<BloodAltarAssemb
         }
 
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            NetworkHooks.openScreen(serverPlayer, blockEntity, pos);
+            serverPlayer.openMenu(blockEntity, pos);
         }
 
-        return InteractionResult.sidedSuccess(level.isClientSide());
+        return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
 }

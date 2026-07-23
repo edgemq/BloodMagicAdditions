@@ -1,18 +1,12 @@
 package com.edgemq.bmaddon.util;
 
+import com.breakinblocks.neovitae.common.fluid.NVFluids;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import wayoftime.bloodmagic.common.fluid.BloodMagicFluids;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public final class BloodMagicFluidHelper {
     public static Fluid lifeEssenceFluid() {
-        Object value = BloodMagicFluids.LIFE_ESSENCE_FLUID.get();
-
-        if (value instanceof Fluid fluid) {
-            return fluid;
-        }
-
-        throw new IllegalStateException("Blood Magic Life Essence fluid is not available.");
+        return NVFluids.ESSENTIA_VITAE_SOURCE.get();
     }
 
     public static FluidStack lifeEssenceStack(int amount) {

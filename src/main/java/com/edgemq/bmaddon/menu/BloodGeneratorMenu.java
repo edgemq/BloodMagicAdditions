@@ -4,7 +4,7 @@ import com.edgemq.bmaddon.blockentity.BloodGeneratorBlockEntity;
 import com.edgemq.bmaddon.registry.BMAddonBlocks;
 import com.edgemq.bmaddon.registry.BMAddonMenus;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -29,7 +29,7 @@ public class BloodGeneratorMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final ContainerData data;
 
-    public BloodGeneratorMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {
+    public BloodGeneratorMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
         this(containerId, playerInventory, getBlockEntity(playerInventory, buffer.readBlockPos()));
     }
 

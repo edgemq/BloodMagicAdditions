@@ -1,136 +1,82 @@
-<div align="center">
-
 # BloodMagic AE2 Addition
 
-### Bring **Blood Magic** automation into your **Applied Energistics 2** network.
+AE2 automation addon for NeoVitae on Minecraft/NeoForge 26.1.2.
 
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-green.svg)](https://www.minecraft.net/ru-ru)
-[![Forge](https://img.shields.io/badge/Loader-Forge-orange.svg)](https://github.com/NeoForgeMDKs/MDK-Forge-1.20.1-ModDevGradle)
-[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/edgemq/BloodMagicAdditions/blob/master/LICENSE)
-[![CurseForge](https://img.shields.io/badge/Download-CurseForge-red.svg)](https://www.curseforge.com/minecraft/mc-mods/bmaddon)
+[![Minecraft](https://img.shields.io/badge/Minecraft-26.1.2-green.svg)](https://www.minecraft.net/)
+[![Loader](https://img.shields.io/badge/Loader-NeoForge-orange.svg)](https://neoforged.net/)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-*Automate Blood Magic crafting using your ME network.*
+## About
 
-</div>
+BloodMagic AE2 Addition connects NeoVitae crafting with Applied Energistics 2. The mod adds AE2-compatible automation for Ara Vitae and Tabula Vitae recipes, while using Essentia Vitae as the required fluid resource.
 
----
+This branch targets Minecraft 26.1.2 and NeoForge 26.1.2.
 
-# About
+## Features
 
-**BloodMagic AE2 Addition** is a Forge addon that connects **Blood Magic** with **Applied Energistics 2**, allowing you to fully automate Blood Magic crafting while keeping Life Essence, altar tiers, and machine upgrades meaningful.
+- Converts Forge Energy into Essentia Vitae.
+- Adds an AE2-compatible Ara Vitae Assembler.
+- Automates Ara Vitae recipes.
+- Automates Tabula Vitae recipes.
+- Adds custom encoded patterns for AE2 Pattern Encoding Terminal.
+- Consumes Essentia Vitae from ME fluid storage.
+- Returns crafted outputs to the ME network.
+- Supports Ara Vitae tier cards II-V.
+- Supports parallel processing and speed upgrades.
+- Includes optional JEI integration.
+- Includes English and Russian localization.
+- Provides modpack-friendly common config values.
 
-The mod introduces dedicated AE2-compatible machines capable of crafting Blood Magic recipes directly from your ME network.
+## Machines
 
----
+### Blood Generator
 
-# Features
+Converts Forge Energy into Essentia Vitae and stores it as a fluid resource for automation.
 
-- ⚡ Convert **Forge Energy** into **Life Essence**
-- 🩸 AE2-compatible **Blood Assembler**
-- 🏺 Automate **Blood Altar** recipes
-- ⚗️ Automate **Alchemy Table** recipes (without Blood Orb requirements)
-- 📜 Custom **Blood Patterns** for AE2 Pattern Encoding Terminal
-- 💧 Consume **Life Essence** directly from ME Fluid Storage
-- 📦 Automatically return crafted items back into the ME Network
-- 🔧 Blood Altar Tier Cards (II–V)
-- 🚀 Parallel Processing Card
-- ⚡ Blood Speed Card
-- 🔋 Full AE2 Speed Card support
-- 📖 Optional JEI integration
-- 🌍 English & Russian localization
-- ⚙️ Modpack-friendly configuration
+### Ara Vitae Assembler
 
----
+An AE2 crafting machine that runs supported NeoVitae recipes from encoded patterns.
 
-# Machines
+Supported recipe families:
 
-## Blood Generator
+- Ara Vitae
+- Tabula Vitae
 
-Converts **Forge Energy (FE)** into **Life Essence**.
+## Patterns
 
-Perfect for automatically supplying your ME system with blood without manually filling Soul Networks.
+The addon provides a custom pattern item for AE2. Encode it in the AE2 Pattern Encoding Terminal to store an Ara Vitae or Tabula Vitae recipe, then place the pattern in the assembler.
 
----
-
-## Blood Assembler
-
-An AE2 crafting machine that performs supported Blood Magic recipes automatically.
-
-Supports:
-
-- Blood Altar recipes
-- Alchemy Table recipes
-- Pattern-based crafting
-- Parallel processing
-- Machine upgrades
-
----
-
-# Blood Patterns
-
-Instead of regular AE2 patterns, the addon introduces **Blood Patterns**.
-
-They can be encoded in the **Pattern Encoding Terminal** and used by the Blood Assembler to automate Blood Magic crafting.
-
----
-
-# Upgrades
-
-The Blood Assembler supports several upgrades:
+## Upgrades
 
 | Upgrade | Description |
-|---------|-------------|
+| --- | --- |
 | Blood Speed Card | Faster crafting |
-| Parallel Processing Card | Multiple recipes simultaneously |
+| Parallel Processing Card | Multiple active crafts |
 | AE2 Speed Card | Native AE2 acceleration |
-| Tier Cards II–V | Unlock higher Blood Altar recipes |
+| Tier Cards II-V | Unlock higher Ara Vitae recipe tiers |
 
----
+## Requirements
 
-# Requirements
-
-### Required
-
-- Minecraft **1.20.1**
-- Forge
-- Blood Magic
+- Minecraft 26.1.2
+- NeoForge 26.1.2
+- NeoVitae
 - Applied Energistics 2
-- Java 17
+- Java 25
 
-### Optional
+Optional:
 
-- JEI (Just Enough Items)
+- JEI
 
----
+## Development
 
-# Supported Recipes
+Build and compile with Gradle:
 
-✔ Blood Altar
+```powershell
+.\gradlew.bat compileJava --no-configuration-cache
+```
 
-✔ Alchemy Table
+NeoVitae is resolved through CurseMaven in this port.
 
-More recipe support may be added in future updates.
+## License
 
----
-
-# Download
-
-CurseForge:
-
-https://www.curseforge.com/minecraft/mc-mods/bmaddon
-
----
-
-# License
-
-This project is licensed under the **GNU GPL v3**.
-
-See the LICENSE file for details.
-
----
-
-# Credits
-
-Created by **edgemq**
-
-Special thanks to the Blood Magic and Applied Energistics 2 developers for creating the mods this addon integrates with.
+This project is licensed under the GNU GPL v3. See [LICENSE](LICENSE) for details.

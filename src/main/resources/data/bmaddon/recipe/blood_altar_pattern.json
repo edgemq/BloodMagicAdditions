@@ -7,14 +7,14 @@
   ],
   "key": {
     "A": {
-      "item": "bloodmagic:weakbloodshard"
+      "item": "neovitae:weak_blood_shard"
     },
     "C": {
       "item": "ae2:blank_pattern"
     }
   },
   "result": {
-    "item": "bmaddon:blood_altar_pattern",
+    "id": "bmaddon:blood_altar_pattern",
     "count": 1
   }
 }

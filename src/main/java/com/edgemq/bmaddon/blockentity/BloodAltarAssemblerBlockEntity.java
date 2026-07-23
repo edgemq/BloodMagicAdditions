@@ -20,7 +20,7 @@ import appeng.api.upgrades.IUpgradeInventory;
 import appeng.api.upgrades.IUpgradeableObject;
 import appeng.api.upgrades.UpgradeInventories;
 import appeng.api.util.AECableType;
-import appeng.blockentity.grid.AENetworkInvBlockEntity;
+import appeng.blockentity.grid.AENetworkedInvBlockEntity;
 import appeng.core.definitions.AEItems;
 import appeng.util.inv.AppEngInternalInventory;
 import com.edgemq.bmaddon.BMAddon;
@@ -39,7 +39,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -53,8 +53,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity implements MenuProvider, IUpgradeableObject, IPowerChannelState, ICraftingProvider, IGridTickable {
-    public static final ResourceLocation INV_PATTERNS = new ResourceLocation(BMAddon.MODID, "blood_altar_assembler_patterns");
+public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity implements MenuProvider, IUpgradeableObject, IPowerChannelState, ICraftingProvider, IGridTickable {
+    public static final Identifier INV_PATTERNS = Identifier.fromNamespaceAndPath(BMAddon.MODID, "blood_altar_assembler_patterns");
 
     private static final String TAG_PATTERNS = "Patterns";
     private static final String TAG_UPGRADES = "Upgrades";
@@ -233,8 +233,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
     }
 
     @Nullable
-    @Override
-    public InternalInventory getSubInventory(ResourceLocation id) {
+    public InternalInventory getSubInventory(Identifier id) {
         if (id.equals(ISegmentedInventory.UPGRADES)) {
             return upgrades;
         }
@@ -246,7 +245,6 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
         return super.getSubInventory(id);
     }
 
-    @Override
     public void onChangeInventory(InternalInventory inventory, int slot) {
         refreshCraftingProvider();
         alertTickManager();
@@ -325,7 +323,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
         }
 
         BloodMagicPatternKind kind = bloodMagicPatternDetails.getKind();
-        ResourceLocation recipeId = bloodMagicPatternDetails.getRecipeId();
+        Identifier recipeId = bloodMagicPatternDetails.getRecipeId();
 
         if (!hasMatchingPatternInInventory(kind, recipeId)) {
             return false;
@@ -366,7 +364,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
         return true;
     }
 
-    private boolean hasMatchingPatternInInventory(BloodMagicPatternKind kind, ResourceLocation recipeId) {
+    private boolean hasMatchingPatternInInventory(BloodMagicPatternKind kind, Identifier recipeId) {
         for (int slot = 0; slot < patternInventory.size(); slot++) {
             ItemStack patternStack = patternInventory.getStackInSlot(slot);
 
@@ -379,7 +377,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
             }
 
             BloodMagicPatternKind storedKind = BloodAltarPatternItem.getRecipeKind(patternStack);
-            ResourceLocation storedRecipeId = BloodAltarPatternItem.getRecipeId(patternStack);
+            Identifier storedRecipeId = BloodAltarPatternItem.getRecipeId(patternStack);
 
             if (storedKind == kind && recipeId.equals(storedRecipeId)) {
                 return true;
@@ -416,7 +414,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(1, 20, !hasWorkToDo(), true);
+        return new TickingRequest(1, 20, !hasWorkToDo(), 1);
     }
 
     @Override
@@ -583,22 +581,6 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
     }
 
     @Override
-    protected boolean readFromStream(FriendlyByteBuf data) {
-        boolean changed = super.readFromStream(data);
-
-        boolean oldPowered = this.powered;
-        this.powered = data.readBoolean();
-
-        return changed || oldPowered != this.powered;
-    }
-
-    @Override
-    protected void writeToStream(FriendlyByteBuf data) {
-        super.writeToStream(data);
-        data.writeBoolean(this.powered);
-    }
-
-    @Override
     public void onMainNodeStateChanged(IGridNodeListener.State reason) {
         if (reason == IGridNodeListener.State.GRID_BOOT) {
             return;
@@ -644,83 +626,6 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-
-        patternInventory.writeToNBT(tag, TAG_PATTERNS);
-        upgrades.writeToNBT(tag, TAG_UPGRADES);
-
-        ListTag activeCraftList = new ListTag();
-
-        for (ActiveCraft craft : activeCrafts) {
-            CompoundTag craftTag = new CompoundTag();
-
-            craftTag.putString(TAG_CRAFT_RECIPE_KIND, craft.kind.getSerializedName());
-            craftTag.putString(TAG_CRAFT_RECIPE_ID, craft.recipeId.toString());
-
-            if (craft.output != null) {
-                craftTag.put(TAG_CRAFT_OUTPUT, GenericStack.writeTag(craft.output));
-            }
-
-            craftTag.putInt(TAG_CRAFT_PROGRESS_TICKS, craft.progressTicks);
-            craftTag.putInt(TAG_CRAFT_TIME_TICKS, craft.craftTimeTicks);
-            craftTag.putBoolean(TAG_CRAFT_PENDING_OUTPUT, craft.pendingOutput);
-
-            activeCraftList.add(craftTag);
-        }
-
-        tag.put(TAG_ACTIVE_CRAFTS, activeCraftList);
-    }
-
-    @Override
-    public void loadTag(CompoundTag tag) {
-        super.loadTag(tag);
-
-        patternInventory.readFromNBT(tag, TAG_PATTERNS);
-        upgrades.readFromNBT(tag, TAG_UPGRADES);
-
-        activeCrafts.clear();
-
-        if (tag.contains(TAG_ACTIVE_CRAFTS, Tag.TAG_LIST)) {
-            ListTag activeCraftList = tag.getList(TAG_ACTIVE_CRAFTS, Tag.TAG_COMPOUND);
-
-            for (int index = 0; index < activeCraftList.size(); index++) {
-                CompoundTag craftTag = activeCraftList.getCompound(index);
-
-                BloodMagicPatternKind kind = BloodMagicPatternKind.byName(craftTag.getString(TAG_CRAFT_RECIPE_KIND));
-                ResourceLocation recipeId = ResourceLocation.tryParse(craftTag.getString(TAG_CRAFT_RECIPE_ID));
-
-                if (recipeId == null) {
-                    continue;
-                }
-
-                GenericStack output = null;
-
-                if (craftTag.contains(TAG_CRAFT_OUTPUT, Tag.TAG_COMPOUND)) {
-                    output = GenericStack.readTag(craftTag.getCompound(TAG_CRAFT_OUTPUT));
-                }
-
-                if (output == null || output.amount() <= 0) {
-                    continue;
-                }
-
-                int progressTicks = Math.max(0, craftTag.getInt(TAG_CRAFT_PROGRESS_TICKS));
-                int craftTimeTicks = Math.max(1, craftTag.getInt(TAG_CRAFT_TIME_TICKS));
-                boolean pendingOutput = craftTag.getBoolean(TAG_CRAFT_PENDING_OUTPUT);
-
-                activeCrafts.add(new ActiveCraft(
-                        kind,
-                        recipeId,
-                        output,
-                        progressTicks,
-                        craftTimeTicks,
-                        pendingOutput
-                ));
-            }
-        }
-    }
-
-    @Override
     public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops) {
         /*
          * Не вызываем super.addAdditionalDrops(...), иначе patternInventory может выпасть дважды.
@@ -756,7 +661,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
 
     private static final class ActiveCraft {
         private final BloodMagicPatternKind kind;
-        private final ResourceLocation recipeId;
+        private final Identifier recipeId;
 
         @Nullable
         private GenericStack output;
@@ -767,7 +672,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkInvBlockEntity impl
 
         private ActiveCraft(
                 BloodMagicPatternKind kind,
-                ResourceLocation recipeId,
+                Identifier recipeId,
                 @Nullable GenericStack output,
                 int progressTicks,
                 int craftTimeTicks,

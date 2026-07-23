@@ -11,15 +11,15 @@ import com.edgemq.bmaddon.ae2.BloodAltarPatternDecoder;
 import com.edgemq.bmaddon.config.BMAddonCommonConfig;
 import com.edgemq.bmaddon.network.BMAddonNetwork;
 import com.edgemq.bmaddon.registry.BMAddonItems;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@Mod.EventBusSubscriber(
-        modid = BMAddon.MODID,
-        bus = Mod.EventBusSubscriber.Bus.MOD
+@EventBusSubscriber(
+        modid = BMAddon.MODID
 )
 public final class BMAddonModEvents {
     private static boolean registeredPatternDecoder;

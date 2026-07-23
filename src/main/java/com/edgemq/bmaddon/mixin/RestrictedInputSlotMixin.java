@@ -21,7 +21,7 @@ public abstract class RestrictedInputSlotMixin {
             method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z",
             at = @At("RETURN"),
             cancellable = true,
-            remap = true
+            remap = false
     )
     private void bmaddon$allowBloodAltarPatternInAe2PatternSlots(
             ItemStack stack,

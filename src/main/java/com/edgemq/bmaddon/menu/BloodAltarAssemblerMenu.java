@@ -8,7 +8,7 @@ import com.edgemq.bmaddon.menu.slot.BloodAltarPatternSlot;
 import com.edgemq.bmaddon.registry.BMAddonMenus;
 import com.edgemq.bmaddon.registry.BMAddonSlotSemantics;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class BloodAltarAssemblerMenu extends AEBaseMenu {
     private final BloodAltarAssemblerBlockEntity host;
 
-    public BloodAltarAssemblerMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {
+    public BloodAltarAssemblerMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
         this(
                 BMAddonMenus.BLOOD_ALTAR_ASSEMBLER.get(),
                 containerId,

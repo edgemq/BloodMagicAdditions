@@ -3,6 +3,7 @@ package com.edgemq.bmaddon.block;
 import com.edgemq.bmaddon.blockentity.BloodGeneratorBlockEntity;
 import com.edgemq.bmaddon.network.BMAddonNetwork;
 import com.edgemq.bmaddon.registry.BMAddonBlockEntities;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -19,11 +20,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
 public class BloodGeneratorBlock extends BaseEntityBlock {
+    public static final MapCodec<BloodGeneratorBlock> CODEC = MapCodec.unit(() -> new BloodGeneratorBlock(Properties.of()));
     private static final VoxelShape SHAPE = box(
             0.0D,
             0.0D,
@@ -35,6 +36,11 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
 
     public BloodGeneratorBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Nullable
@@ -86,7 +92,6 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
         );
     }
 
-    @Override
     public InteractionResult use(
             BlockState state,
             Level level,
@@ -103,7 +108,7 @@ public class BloodGeneratorBlock extends BaseEntityBlock {
 
         if (blockEntity instanceof BloodGeneratorBlockEntity bloodGenerator && player instanceof ServerPlayer serverPlayer) {
             BMAddonNetwork.sendConfigToPlayer(serverPlayer);
-            NetworkHooks.openScreen(serverPlayer, bloodGenerator, pos);
+            serverPlayer.openMenu(bloodGenerator, pos);
             return InteractionResult.CONSUME;
         }
 

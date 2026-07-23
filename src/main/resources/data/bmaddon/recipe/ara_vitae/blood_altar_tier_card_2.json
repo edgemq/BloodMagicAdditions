@@ -1,0 +1,13 @@
+﻿{
+    "type":  "neovitae:ara_vitae_recipe",
+    "input":  {
+                  "item":  "neovitae:rune_capacity"
+              },
+    "output":  {
+                   "id":  "bmaddon:blood_altar_tier_card_2"
+               },
+    "minTier":  1,
+    "bloodNeeded":  2000,
+    "craftSpeed":  10,
+    "drainSpeed":  10
+}

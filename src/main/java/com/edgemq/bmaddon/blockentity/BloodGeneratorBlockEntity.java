@@ -17,13 +17,10 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nullable;
 
@@ -54,9 +51,6 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
     };
 
     private final IFluidHandler externalFluidHandler = new OutputOnlyFluidHandler();
-
-    private LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> energyStorage);
-    private LazyOptional<IFluidHandler> fluidCapability = LazyOptional.of(() -> externalFluidHandler);
 
     public BloodGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(BMAddonBlockEntities.BLOOD_GENERATOR.get(), pos, state);
@@ -151,55 +145,6 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
     }
 
     private void tryAutoOutputFluid() {
-        if (level == null || level.isClientSide()) {
-            return;
-        }
-
-        if (!BMAddonCommonConfig.BLOOD_GENERATOR_AUTO_OUTPUT.get()) {
-            return;
-        }
-
-        if (bloodTank.isEmpty()) {
-            return;
-        }
-
-        int maxOutput = BMAddonCommonConfig.BLOOD_GENERATOR_MAX_FLUID_OUTPUT_PER_TICK.get();
-
-        for (Direction direction : Direction.values()) {
-            if (bloodTank.isEmpty()) {
-                return;
-            }
-
-            BlockEntity neighbor = level.getBlockEntity(worldPosition.relative(direction));
-
-            if (neighbor == null) {
-                continue;
-            }
-
-            neighbor.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).ifPresent(handler -> {
-                FluidStack simulatedDrain = bloodTank.drain(maxOutput, IFluidHandler.FluidAction.SIMULATE);
-
-                if (simulatedDrain.isEmpty()) {
-                    return;
-                }
-
-                int accepted = handler.fill(simulatedDrain, IFluidHandler.FluidAction.SIMULATE);
-
-                if (accepted <= 0) {
-                    return;
-                }
-
-                FluidStack actualDrain = bloodTank.drain(accepted, IFluidHandler.FluidAction.EXECUTE);
-                int actuallyFilled = handler.fill(actualDrain, IFluidHandler.FluidAction.EXECUTE);
-
-                if (actuallyFilled < actualDrain.getAmount()) {
-                    int remainder = actualDrain.getAmount() - actuallyFilled;
-                    bloodTank.fill(new FluidStack(actualDrain.getFluid(), remainder), IFluidHandler.FluidAction.EXECUTE);
-                }
-
-                setChangedAndSync();
-            });
-        }
     }
 
     public int getEnergyStored() {
@@ -265,79 +210,18 @@ public class BloodGeneratorBlockEntity extends BlockEntity implements MenuProvid
         }
     }
 
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-
-        tag.putInt(TAG_ENERGY, energyStorage.getEnergyStored());
-
-        CompoundTag tankTag = new CompoundTag();
-        bloodTank.writeToNBT(tankTag);
-        tag.put(TAG_BLOOD_TANK, tankTag);
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-
-        energyStorage.setEnergyStored(tag.getInt(TAG_ENERGY));
-
-        if (tag.contains(TAG_BLOOD_TANK)) {
-            bloodTank.readFromNBT(tag.getCompound(TAG_BLOOD_TANK));
-        }
-
-        updateTankCapacityFromConfig();
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        saveAdditional(tag);
-        return tag;
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        load(tag);
-    }
-
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
-    public void onLoad() {
-        super.onLoad();
-
-        if (!energyCapability.isPresent()) {
-            energyCapability = LazyOptional.of(() -> energyStorage);
-        }
-
-        if (!fluidCapability.isPresent()) {
-            fluidCapability = LazyOptional.of(() -> externalFluidHandler);
-        }
+    public IEnergyStorage getEnergyHandler(@Nullable Direction side) {
+        return energyStorage;
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyCapability.invalidate();
-        fluidCapability.invalidate();
-    }
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction side) {
-        if (capability == ForgeCapabilities.ENERGY) {
-            return energyCapability.cast();
-        }
-
-        if (capability == ForgeCapabilities.FLUID_HANDLER) {
-            return fluidCapability.cast();
-        }
-
-        return super.getCapability(capability, side);
+    public IFluidHandler getFluidHandler(@Nullable Direction side) {
+        return externalFluidHandler;
     }
 
     private final class GeneratorEnergyStorage implements IEnergyStorage {
