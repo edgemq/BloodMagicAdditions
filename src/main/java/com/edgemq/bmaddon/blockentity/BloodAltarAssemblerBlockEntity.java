@@ -262,7 +262,8 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
         return super.getSubInventory(id);
     }
 
-    public void onChangeInventory(InternalInventory inventory, int slot) {
+    @Override
+    public void onChangeInventory(AppEngInternalInventory inventory, int slot) {
         refreshCraftingProvider();
         alertTickManager();
         saveChanges();

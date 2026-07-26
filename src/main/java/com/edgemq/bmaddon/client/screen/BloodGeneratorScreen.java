@@ -36,6 +36,10 @@ public class BloodGeneratorScreen extends AbstractContainerScreen<BloodGenerator
     private static final int BLOOD_ICON_WIDTH = 5;
     private static final int BLOOD_FILL_WIDTH = 129;
     private static final int BLOOD_INDICATOR_HEIGHT = 5;
+    private static final int ENERGY_TEXT_X = 46;
+    private static final int ENERGY_TEXT_Y = 61;
+    private static final int BLOOD_TEXT_X = 46;
+    private static final int BLOOD_TEXT_Y = 70;
     private static final int GENERATION_TEXT_X = 46;
     private static final int GENERATION_TEXT_Y = 91;
     private static final int GENERATION_TEXT_COLOR = 0x2F2F2F;
@@ -77,7 +81,31 @@ public class BloodGeneratorScreen extends AbstractContainerScreen<BloodGenerator
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(
+        guiGraphics.text(
+                this.font,
+                Component.translatable(
+                        "screen.bmaddon.blood_generator.energy_value",
+                        this.menu.getEnergyStored(),
+                        this.menu.getMaxEnergyStored()
+                ),
+                ENERGY_TEXT_X,
+                ENERGY_TEXT_Y,
+                GENERATION_TEXT_COLOR,
+                false
+        );
+        guiGraphics.text(
+                this.font,
+                Component.translatable(
+                        "screen.bmaddon.blood_generator.blood_value",
+                        this.menu.getBloodAmount(),
+                        this.menu.getBloodCapacity()
+                ),
+                BLOOD_TEXT_X,
+                BLOOD_TEXT_Y,
+                GENERATION_TEXT_COLOR,
+                false
+        );
+        guiGraphics.text(
                 this.font,
                 Component.translatable(
                         "screen.bmaddon.blood_generator.generation_value",

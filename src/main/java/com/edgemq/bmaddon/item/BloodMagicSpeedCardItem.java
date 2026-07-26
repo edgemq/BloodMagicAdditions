@@ -3,12 +3,12 @@ package com.edgemq.bmaddon.item;
 import appeng.items.materials.UpgradeCardItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-import javax.annotation.Nullable;
-import java.util.List;
+import java.util.function.Consumer;
 
 public class BloodMagicSpeedCardItem extends UpgradeCardItem {
     public static final int SPEED_CARD_EQUIVALENT = 4;
@@ -20,11 +20,12 @@ public class BloodMagicSpeedCardItem extends UpgradeCardItem {
     @Override
     public void appendHoverText(
             ItemStack stack,
-            @Nullable Level level,
-            List<Component> tooltip,
+            Item.TooltipContext context,
+            TooltipDisplay tooltipDisplay,
+            Consumer<Component> tooltip,
             TooltipFlag flag
     ) {
-        tooltip.add(Component.translatable("tooltip.bmaddon.blood_magic_speed_card.description")
+        tooltip.accept(Component.translatable("tooltip.bmaddon.blood_magic_speed_card.description")
                 .withStyle(ChatFormatting.GRAY));
     }
 }

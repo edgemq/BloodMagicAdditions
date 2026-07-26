@@ -26,6 +26,12 @@ public class BloodAltarAssemblerScreen extends AEBaseScreen<BloodAltarAssemblerM
     }
 
     @Override
+    protected void init() {
+        super.init();
+        this.topPos -= 1;
+    }
+
+    @Override
     public void extractSlot(GuiGraphicsExtractor guiGraphics, Slot slot, int mouseX, int mouseY) {
         if (shouldExtractPatternOutputInstead(slot)) {
             extractPatternOutputInstead(guiGraphics, slot);

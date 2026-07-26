@@ -34,7 +34,7 @@ public final class BloodAltarRecipeHelper {
     }
 
     public static Optional<AraVitaeRecipe> getAltarRecipe(Level level, Identifier recipeId) {
-        if (level == null || recipeId == null) {
+        if (level == null || level.getServer() == null || recipeId == null) {
             return Optional.empty();
         }
 
@@ -46,7 +46,7 @@ public final class BloodAltarRecipeHelper {
     }
 
     public static Optional<TabulaVitaeRecipe> getAlchemyTableRecipe(Level level, Identifier recipeId) {
-        if (level == null || recipeId == null) {
+        if (level == null || level.getServer() == null || recipeId == null) {
             return Optional.empty();
         }
 

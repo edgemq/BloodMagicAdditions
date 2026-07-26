@@ -19,11 +19,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BloodAltarPatternItem extends Item {
     private static final String TAG_RECIPE_KIND = "RecipeKind";
@@ -103,72 +105,46 @@ public class BloodAltarPatternItem extends Item {
 
     public void appendHoverText(
             ItemStack stack,
-            @Nullable Level level,
-            List<Component> tooltip,
+            Item.TooltipContext context,
+            TooltipDisplay tooltipDisplay,
+            Consumer<Component> tooltip,
             TooltipFlag flag
     ) {
         if (!isEncoded(stack)) {
-            tooltip.add(Component.translatable("tooltip.bmaddon.blood_altar_pattern.empty").withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("tooltip.bmaddon.blood_altar_pattern.how_to_encode").withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.accept(Component.translatable("tooltip.bmaddon.blood_altar_pattern.empty").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("tooltip.bmaddon.blood_altar_pattern.how_to_encode").withStyle(ChatFormatting.DARK_GRAY));
             return;
         }
 
         Identifier recipeId = getRecipeId(stack);
 
         if (recipeId == null) {
-            tooltip.add(Component.translatable("tooltip.bmaddon.blood_altar_pattern.invalid").withStyle(ChatFormatting.RED));
+            tooltip.accept(Component.translatable("tooltip.bmaddon.blood_altar_pattern.invalid").withStyle(ChatFormatting.RED));
             return;
         }
 
         BloodMagicPatternKind kind = getRecipeKind(stack);
-        List<ItemStack> inputPreviews = getInputPreviews(stack);
-        ItemStack outputPreview = getResolvedOutputPreview(stack, level, kind, recipeId);
+        Level level = context.level();
 
-        tooltip.add(Component.translatable(
+        tooltip.accept(Component.translatable(
                 "tooltip.bmaddon.blood_altar_pattern.type",
                 Component.translatable(getRecipeKindTranslationKey(kind))
         ).withStyle(ChatFormatting.GRAY));
 
-        if (inputPreviews.size() == 1) {
-            tooltip.add(Component.translatable(
-                    "tooltip.bmaddon.blood_altar_pattern.input",
-                    inputPreviews.get(0).getHoverName()
-            ).withStyle(ChatFormatting.GRAY));
-        } else {
-            for (int index = 0; index < inputPreviews.size(); index++) {
-                ItemStack input = inputPreviews.get(index);
-
-                if (!input.isEmpty()) {
-                    tooltip.add(Component.translatable(
-                            "tooltip.bmaddon.blood_altar_pattern.input_indexed",
-                            index + 1,
-                            input.getHoverName()
-                    ).withStyle(ChatFormatting.GRAY));
-                }
-            }
-        }
-
-        if (!outputPreview.isEmpty()) {
-            tooltip.add(Component.translatable(
-                    "tooltip.bmaddon.blood_altar_pattern.output",
-                    outputPreview.getHoverName()
-            ).withStyle(ChatFormatting.GRAY));
-        }
-
-        tooltip.add(Component.translatable(
+        tooltip.accept(Component.translatable(
                 "tooltip.bmaddon.blood_altar_pattern.tier",
                 getStoredAltarTierForDisplay(stack)
         ).withStyle(ChatFormatting.GRAY));
 
-        tooltip.add(Component.translatable(
+        tooltip.accept(Component.translatable(
                 "tooltip.bmaddon.blood_altar_pattern.life_essence",
                 getStoredSyphon(stack)
         ).withStyle(ChatFormatting.GRAY));
 
-        tooltip.add(Component.translatable("tooltip.bmaddon.blood_altar_pattern.shift_clear").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("tooltip.bmaddon.blood_altar_pattern.shift_clear").withStyle(ChatFormatting.DARK_GRAY));
 
-        if (level != null && !BloodAltarRecipeHelper.recipeStillExists(level, kind, recipeId)) {
-            tooltip.add(Component.translatable("tooltip.bmaddon.blood_altar_pattern.recipe_missing").withStyle(ChatFormatting.RED));
+        if (level != null && !level.isClientSide() && !BloodAltarRecipeHelper.recipeStillExists(level, kind, recipeId)) {
+            tooltip.accept(Component.translatable("tooltip.bmaddon.blood_altar_pattern.recipe_missing").withStyle(ChatFormatting.RED));
         }
     }
 

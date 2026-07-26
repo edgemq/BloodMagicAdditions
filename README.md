@@ -27,6 +27,18 @@ This branch targets Minecraft 26.1.2 and NeoForge 26.1.2.
 - Includes English and Russian localization.
 - Provides modpack-friendly common config values.
 
+## BMAddon26.1.2-beta
+
+This beta targets Minecraft 26.1.2, NeoForge 26.1.2, NeoVitae, and AE2 26.x.
+
+Changes in this build:
+
+- Updated item tooltips and client rendering calls for Minecraft/NeoVitae 26.1.2.
+- Fixed Blood Generator GUI sync so stored energy and Essentia Vitae values update on the client.
+- Fixed Ara Vitae Assembler pattern inventory updates so newly inserted encoded patterns are immediately visible to ME crafting.
+- Adjusted Ara Vitae Assembler GUI positioning for the machine panel and player inventory.
+- Reduced encoded Blood Pattern tooltip noise so encoded patterns are easier to read.
+
 ## Machines
 
 ### Blood Generator

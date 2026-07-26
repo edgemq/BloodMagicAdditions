@@ -10,9 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class BloodGeneratorMenu extends AbstractContainerMenu {
     /*
@@ -30,27 +30,36 @@ public class BloodGeneratorMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public BloodGeneratorMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
-        this(containerId, playerInventory, getBlockEntity(playerInventory, buffer.readBlockPos()));
+        this(
+                containerId,
+                playerInventory,
+                ContainerLevelAccess.create(playerInventory.player.level(), buffer.readBlockPos()),
+                new SimpleContainerData(BloodGeneratorBlockEntity.DATA_COUNT)
+        );
     }
 
     public BloodGeneratorMenu(int containerId, Inventory playerInventory, BloodGeneratorBlockEntity blockEntity) {
+        this(
+                containerId,
+                playerInventory,
+                ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()),
+                blockEntity.createContainerData()
+        );
+    }
+
+    private BloodGeneratorMenu(
+            int containerId,
+            Inventory playerInventory,
+            ContainerLevelAccess access,
+            ContainerData data
+    ) {
         super(BMAddonMenus.BLOOD_GENERATOR.get(), containerId);
 
-        this.access = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
-        this.data = blockEntity.createContainerData();
+        this.access = access;
+        this.data = data;
 
         addDataSlots(this.data);
         addPlayerInventorySlots(playerInventory);
-    }
-
-    private static BloodGeneratorBlockEntity getBlockEntity(Inventory playerInventory, BlockPos pos) {
-        BlockEntity blockEntity = playerInventory.player.level().getBlockEntity(pos);
-
-        if (blockEntity instanceof BloodGeneratorBlockEntity bloodGenerator) {
-            return bloodGenerator;
-        }
-
-        throw new IllegalStateException("Expected BloodGeneratorBlockEntity at " + pos);
     }
 
     private void addPlayerInventorySlots(Inventory playerInventory) {
