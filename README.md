@@ -1,6 +1,6 @@
-# BloodMagic AE2 Addition
+# BMAddon
 
-AE2 automation addon for NeoVitae on Minecraft/NeoForge 26.1.2.
+AE2 automation addon for Blood Magic on Minecraft 1.20.1 and NeoVitae on Minecraft/NeoForge 26.1.2.
 
 [![Minecraft](https://img.shields.io/badge/Minecraft-26.1.2-green.svg)](https://www.minecraft.net/)
 [![Loader](https://img.shields.io/badge/Loader-NeoForge-orange.svg)](https://neoforged.net/)
@@ -8,9 +8,12 @@ AE2 automation addon for NeoVitae on Minecraft/NeoForge 26.1.2.
 
 ## About
 
-BloodMagic AE2 Addition connects NeoVitae crafting with Applied Energistics 2. The mod adds AE2-compatible automation for Ara Vitae and Tabula Vitae recipes, while using Essentia Vitae as the required fluid resource.
+BMAddon connects Blood Magic-style crafting with Applied Energistics 2. The project page covers two release lines:
 
-This branch targets Minecraft 26.1.2 and NeoForge 26.1.2.
+- Blood Magic builds for Minecraft 1.20.1.
+- NeoVitae builds for Minecraft/NeoForge 26.1.2.
+
+This branch targets the NeoVitae 26.1.2 line. It adds AE2-compatible automation for Ara Vitae and Tabula Vitae recipes, while using Essentia Vitae as the required fluid resource.
 
 ## Features
 
@@ -69,11 +72,20 @@ The addon provides a custom pattern item for AE2. Encode it in the AE2 Pattern E
 
 ## Requirements
 
+### NeoVitae 26.1.2 beta
+
 - Minecraft 26.1.2
 - NeoForge 26.1.2
 - NeoVitae
 - Applied Energistics 2
 - Java 25
+
+### Blood Magic 1.20.1 builds
+
+- Minecraft 1.20.1
+- Forge
+- Blood Magic
+- Applied Energistics 2
 
 Optional:
 

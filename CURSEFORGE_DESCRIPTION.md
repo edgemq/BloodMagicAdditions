@@ -1,8 +1,15 @@
 # BloodMagic AE2 Addition
 
-BMAddon connects NeoVitae crafting with Applied Energistics 2, adding Essentia Vitae-powered automation and ME crafting support for Minecraft/NeoForge 26.1.2.
+BMAddon connects Blood Magic-style crafting with Applied Energistics 2.
 
-The mod adds a Blood Generator, which converts Forge Energy into Essentia Vitae, and an Ara Vitae Assembler, an AE2-compatible machine that can automate supported NeoVitae recipes directly from your ME network.
+The CurseForge page hosts both release lines:
+
+- Blood Magic builds for Minecraft 1.20.1
+- NeoVitae builds for Minecraft/NeoForge 26.1.2
+
+The current 26.1.2 beta line is built for NeoVitae. It adds Essentia Vitae-powered automation and ME crafting support for supported NeoVitae recipes.
+
+The mod adds a Blood Generator, which converts Forge Energy into Essentia Vitae, and an Ara Vitae Assembler, an AE2-compatible machine that can automate supported recipes directly from your ME network.
 
 ## Features
 
@@ -23,7 +30,7 @@ The mod adds a Blood Generator, which converts Forge Energy into Essentia Vitae,
 
 ## Blood Patterns
 
-Use Blood Patterns to encode supported NeoVitae recipes. Place a blank Blood Pattern into the AE2 Pattern Encoding Terminal and encode a valid Ara Vitae or Tabula Vitae recipe.
+Use Blood Patterns to encode supported recipes. In the NeoVitae 26.1.2 beta line, place a blank Blood Pattern into the AE2 Pattern Encoding Terminal and encode a valid Ara Vitae or Tabula Vitae recipe.
 
 Encoded patterns store the recipe type, inputs, output, required tier, Essentia Vitae cost, and recipe ID.
 
@@ -40,14 +47,23 @@ Beta fixes include:
 
 ## Requirements
 
+### NeoVitae 26.1.2 beta
+
 - Minecraft 26.1.2
 - NeoForge 26.1.2
 - NeoVitae
 - Applied Energistics 2
 - Java 25
 
+### Blood Magic 1.20.1 builds
+
+- Minecraft 1.20.1
+- Forge
+- Blood Magic
+- Applied Energistics 2
+
 Optional:
 
 - JEI
 
-BMAddon brings NeoVitae crafting into your AE2 network while keeping Essentia Vitae costs, altar tiers, and machine upgrades meaningful.
+BMAddon brings Blood Magic and NeoVitae automation into your AE2 network while keeping fluid costs, altar tiers, and machine upgrades meaningful.
