@@ -27,5 +27,6 @@ public class BloodMagicSpeedCardItem extends UpgradeCardItem {
     ) {
         tooltip.accept(Component.translatable("tooltip.bmaddon.blood_magic_speed_card.description")
                 .withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flag);
     }
 }

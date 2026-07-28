@@ -25,5 +25,6 @@ public class BloodAltarParallelCardItem extends UpgradeCardItem {
     ) {
         tooltip.accept(Component.translatable("tooltip.bmaddon.blood_altar_parallel_card.description")
                 .withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flag);
     }
 }

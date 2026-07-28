@@ -56,7 +56,7 @@
 
   "tooltip.bmaddon.blood_altar_parallel_card.description": "Increases the number of simultaneous crafts in the Blood Assembler.",
 
-  "tooltip.bmaddon.blood_magic_speed_card.description": "Works like an AE2 acceleration card, but counts as two normal cards.",
+  "tooltip.bmaddon.blood_magic_speed_card.description": "Works like an AE2 acceleration card, but counts as four normal cards.",
   "chat.bmaddon.memory_card.missing_blank_patterns": "Not enough blank Blood Patterns in inventory",
   "tooltip.bmaddon.blood_altar_pattern.how_to_encode": "Place in an AE2 Pattern Encoding Terminal to encode an Ara Vitae or Tabula Vitae recipe",
   "message.bmaddon.blood_altar_pattern.cleared": "Pattern cleared.",

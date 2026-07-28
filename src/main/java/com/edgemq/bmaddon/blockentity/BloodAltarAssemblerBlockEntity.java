@@ -71,6 +71,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
     public static final int UPGRADE_SLOT_COUNT = 9;
     public static final int BASE_ALTAR_TIER = 1;
     public static final int MAX_ALTAR_TIER = 4;
+    private static final double BASE_CRAFT_SPEED_MULTIPLIER = 1.5D;
 
     private final AppEngInternalInventory patternInventory = new AppEngInternalInventory(
             this,
@@ -184,8 +185,9 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
         int base = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_BASE_PARALLEL_CRAFTS.get();
         int perCard = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_PARALLEL_CRAFTS_PER_CARD.get();
         int cap = BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_MAX_PARALLEL_CRAFTS.get();
+        int parallelCards = getParallelCardCount();
 
-        int calculated = base + getParallelCardCount() * perCard;
+        int calculated = parallelCards > 0 ? parallelCards * perCard : base;
 
         return Math.max(1, Math.min(cap, calculated));
     }
@@ -521,7 +523,7 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
                 : BMAddonCommonConfig.BLOOD_ALTAR_ASSEMBLER_MIN_CRAFT_TIME_TICKS.get();
         int speedCards = getAccelerationCardCount();
 
-        int calculated = baseTime / Math.max(1, 1 + speedCards);
+        int calculated = (int) Math.ceil(baseTime / (BASE_CRAFT_SPEED_MULTIPLIER * Math.max(1, 1 + speedCards)));
 
         return Math.max(minTime, calculated);
     }
@@ -606,6 +608,24 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
             return;
         }
 
+        updatePowerState();
+        refreshCraftingProvider();
+        alertTickManager();
+    }
+
+    @Override
+    public boolean isPowered() {
+        return powered;
+    }
+
+    public void onNeighborChanged() {
+        onGridConnectableSidesChanged();
+        updatePowerState();
+        refreshCraftingProvider();
+        alertTickManager();
+    }
+
+    private void updatePowerState() {
         boolean newPowered = false;
 
         IGrid grid = getMainNode().getGrid();
@@ -623,14 +643,6 @@ public class BloodAltarAssemblerBlockEntity extends AENetworkedInvBlockEntity im
             this.powered = newPowered;
             markForUpdate();
         }
-
-        refreshCraftingProvider();
-        alertTickManager();
-    }
-
-    @Override
-    public boolean isPowered() {
-        return powered;
     }
 
     @Override

@@ -36,5 +36,6 @@ public class BloodAltarTierCardItem extends UpgradeCardItem {
         ).withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltip.bmaddon.blood_altar_tier_card.description")
                 .withStyle(ChatFormatting.DARK_GRAY));
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flag);
     }
 }

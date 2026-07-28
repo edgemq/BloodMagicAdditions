@@ -1,6 +1,7 @@
 package com.edgemq.bmaddon.event;
 
 import appeng.api.crafting.PatternDetailsHelper;
+import appeng.api.AECapabilities;
 import appeng.api.upgrades.Upgrades;
 import appeng.core.definitions.AEItems;
 import com.edgemq.bmaddon.BMAddon;
@@ -50,6 +51,11 @@ public final class BMAddonModEvents {
                 Capabilities.Fluid.BLOCK,
                 BMAddonBlockEntities.BLOOD_GENERATOR.get(),
                 (blockEntity, side) -> blockEntity.getTransferFluidHandler(side)
+        );
+        event.registerBlockEntity(
+                AECapabilities.IN_WORLD_GRID_NODE_HOST,
+                BMAddonBlockEntities.BLOOD_ALTAR_ASSEMBLER.get(),
+                (blockEntity, side) -> blockEntity
         );
     }
 

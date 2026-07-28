@@ -90,11 +90,11 @@ public final class BMAddonCommonConfig {
 
         BLOOD_ALTAR_ASSEMBLER_PARALLEL_CRAFTS_PER_CARD = builder
                 .comment("How many additional parallel crafts each Ara Vitae Parallel Card adds.")
-                .defineInRange("parallelCraftsPerCard", 1, 0, 64);
+                .defineInRange("parallelCraftsPerCard", 2, 0, 64);
 
         BLOOD_ALTAR_ASSEMBLER_MAX_PARALLEL_CRAFTS = builder
                 .comment("Hard cap for active crafts in one Ara Vitae Assembler.")
-                .defineInRange("maxParallelCrafts", 4, 1, 64);
+                .defineInRange("maxParallelCrafts", 8, 1, 64);
 
         builder.pop();
 

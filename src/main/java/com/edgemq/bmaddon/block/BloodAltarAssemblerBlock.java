@@ -14,7 +14,10 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
+
+import javax.annotation.Nullable;
 
 public class BloodAltarAssemblerBlock extends AEBaseEntityBlock<BloodAltarAssemblerBlockEntity> {
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
@@ -36,6 +39,28 @@ public class BloodAltarAssemblerBlock extends AEBaseEntityBlock<BloodAltarAssemb
             BloodAltarAssemblerBlockEntity blockEntity
     ) {
         return currentState.setValue(POWERED, blockEntity.isPowered());
+    }
+
+    @Override
+    protected void neighborChanged(
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            Block block,
+            @Nullable Orientation orientation,
+            boolean movedByPiston
+    ) {
+        super.neighborChanged(state, level, pos, block, orientation, movedByPiston);
+
+        if (level.isClientSide()) {
+            return;
+        }
+
+        BloodAltarAssemblerBlockEntity blockEntity = getBlockEntity(level, pos);
+
+        if (blockEntity != null) {
+            blockEntity.onNeighborChanged();
+        }
     }
 
     @Override
