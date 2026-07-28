@@ -12,8 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.common.recipe.BMRecipes;
-import wayoftime.bloodmagic.common.recipe.bloodaltar.BloodAltarRecipe;
+import com.breakinblocks.neovitae.api.recipe.AraVitaeRecipe;
+import com.breakinblocks.neovitae.common.recipe.NVRecipes;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,13 +36,13 @@ public final class BloodAltarPatternMatcher {
                 return Optional.empty();
             }
 
-            Optional<BloodAltarRecipe> recipeOptional = BloodAltarRecipeHelper.getAltarRecipe(level, recipeId);
+            Optional<AraVitaeRecipe> recipeOptional = BloodAltarRecipeHelper.getAltarRecipe(level, recipeId);
 
             if (recipeOptional.isEmpty()) {
                 return Optional.empty();
             }
 
-            BloodAltarRecipe recipe = recipeOptional.get();
+            AraVitaeRecipe recipe = recipeOptional.get();
 
             if (recipe.getMinTier() > bloodMagicRecipeTierLimit) {
                 return Optional.empty();
@@ -89,13 +89,13 @@ public final class BloodAltarPatternMatcher {
     ) {
         ResourceLocation recipeId = patternDetails.getRecipeId();
 
-        Optional<BloodAltarRecipe> recipeOptional = BloodAltarRecipeHelper.getAltarRecipe(level, recipeId);
+        Optional<AraVitaeRecipe> recipeOptional = BloodAltarRecipeHelper.getAltarRecipe(level, recipeId);
 
         if (recipeOptional.isEmpty()) {
             return Optional.empty();
         }
 
-        BloodAltarRecipe recipe = recipeOptional.get();
+        AraVitaeRecipe recipe = recipeOptional.get();
 
         if (recipe.getMinTier() > bloodMagicRecipeTierLimit) {
             return Optional.empty();
@@ -133,10 +133,10 @@ public final class BloodAltarPatternMatcher {
             return Optional.empty();
         }
 
-        List<RecipeHolder<BloodAltarRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(BMRecipes.BLOOD_ALTAR_TYPE.get());
+        List<RecipeHolder<AraVitaeRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(NVRecipes.ARA_VITAE_TYPE.get());
 
-        for (RecipeHolder<BloodAltarRecipe> recipeHolder : recipes) {
-            BloodAltarRecipe recipe = recipeHolder.value();
+        for (RecipeHolder<AraVitaeRecipe> recipeHolder : recipes) {
+            AraVitaeRecipe recipe = recipeHolder.value();
 
             if (recipe.getMinTier() > bloodMagicRecipeTierLimit) {
                 continue;
@@ -160,7 +160,7 @@ public final class BloodAltarPatternMatcher {
         return Optional.empty();
     }
 
-    private static boolean matchesRecipeOutput(IPatternDetails patternDetails, BloodAltarRecipe recipe) {
+    private static boolean matchesRecipeOutput(IPatternDetails patternDetails, AraVitaeRecipe recipe) {
         GenericStack primaryOutput = patternDetails.getPrimaryOutput();
 
         if (primaryOutput == null || primaryOutput.amount() <= 0) {
@@ -183,7 +183,7 @@ public final class BloodAltarPatternMatcher {
                 && primaryOutput.amount() == recipeOutput.getCount();
     }
 
-    private static boolean matchesRecipeItemInput(IPatternDetails patternDetails, BloodAltarRecipe recipe) {
+    private static boolean matchesRecipeItemInput(IPatternDetails patternDetails, AraVitaeRecipe recipe) {
         for (IPatternDetails.IInput input : patternDetails.getInputs()) {
             long multiplier = Math.max(1L, input.getMultiplier());
 
@@ -209,7 +209,7 @@ public final class BloodAltarPatternMatcher {
         return false;
     }
 
-    private static boolean matchesRecipeLifeEssenceInput(IPatternDetails patternDetails, BloodAltarRecipe recipe) {
+    private static boolean matchesRecipeLifeEssenceInput(IPatternDetails patternDetails, AraVitaeRecipe recipe) {
         int requiredLifeEssence = BloodAltarPatternDetails.getRequiredLifeEssence(recipe);
 
         if (requiredLifeEssence <= 0) {

@@ -17,8 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.common.recipe.alchemy_table.AlchemyTableRecipe;
-import wayoftime.bloodmagic.common.recipe.bloodaltar.BloodAltarRecipe;
+import com.breakinblocks.neovitae.api.recipe.AraVitaeRecipe;
+import com.breakinblocks.neovitae.common.recipe.tabulavitae.TabulaVitaeRecipe;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -290,7 +290,7 @@ public class BloodAltarPatternItem extends Item {
     }
 
     public static int getStoredAltarTierForDisplay(ItemStack stack) {
-        return getStoredMinimumTier(stack) + 1;
+        return getStoredMinimumTier(stack);
     }
 
     public static int getStoredSyphon(ItemStack stack) {
@@ -323,7 +323,7 @@ public class BloodAltarPatternItem extends Item {
         return tag.getInt(TAG_DRAIN_RATE);
     }
 
-    public static void encode(ItemStack patternStack, ResourceLocation recipeId, BloodAltarRecipe recipe, ItemStack inputPreview) {
+    public static void encode(ItemStack patternStack, ResourceLocation recipeId, AraVitaeRecipe recipe, ItemStack inputPreview) {
         ItemStack storedInputPreview = inputPreview.copy();
         storedInputPreview.setCount(1);
 
@@ -340,7 +340,7 @@ public class BloodAltarPatternItem extends Item {
         );
     }
 
-    public static void encode(ItemStack patternStack, ResourceLocation recipeId, AlchemyTableRecipe recipe, List<ItemStack> inputPreviews) {
+    public static void encode(ItemStack patternStack, ResourceLocation recipeId, TabulaVitaeRecipe recipe, List<ItemStack> inputPreviews) {
         List<ItemStack> storedInputs = new ArrayList<>();
 
         for (ItemStack input : inputPreviews) {
@@ -358,9 +358,9 @@ public class BloodAltarPatternItem extends Item {
                 BloodMagicPatternKind.ALCHEMY_TABLE,
                 recipeId,
                 storedInputs,
-                recipe.output().copy(),
-                recipe.tier(),
-                recipe.essence(),
+                recipe.getOutput().copy(),
+                recipe.getMinimumTier(),
+                recipe.getSyphon(),
                 0,
                 0
         );

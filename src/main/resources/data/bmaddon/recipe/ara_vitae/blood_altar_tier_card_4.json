@@ -1,0 +1,13 @@
+{
+  "type": "neovitae:ara_vitae_recipe",
+  "input": {
+    "item": "bmaddon:blood_altar_tier_card_3"
+  },
+  "output": {
+    "id": "bmaddon:blood_altar_tier_card_4"
+  },
+  "minTier": 3,
+  "bloodNeeded": 10000,
+  "craftSpeed": 20,
+  "drainSpeed": 20
+}

@@ -2,6 +2,6 @@
   "parent": "ae2:block/molecular_assembler",
   "textures": {
     "particle": "bmaddon:block/blood_altar_assembler",
-    "outside": "bmaddon:block/blood_altar_assembler"
+    "base": "bmaddon:block/blood_altar_assembler"
   }
 }

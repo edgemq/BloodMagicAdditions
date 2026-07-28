@@ -1,63 +1,64 @@
 {
   "itemGroup.bmaddon.main": "BM Addon",
 
-  "block.bmaddon.blood_generator": "Генератор крови",
-  "block.bmaddon.blood_altar_assembler": "Кровавый сборщик",
+  "block.bmaddon.blood_generator": "Генератор Essentia Vitae",
+  "block.bmaddon.blood_altar_assembler": "Сборщик Ara Vitae",
 
-  "item.bmaddon.blood_generator": "Генератор крови",
-  "item.bmaddon.blood_altar_assembler": "Кровавый сборщик",
+  "item.bmaddon.blood_generator": "Генератор Essentia Vitae",
+  "item.bmaddon.blood_altar_assembler": "Сборщик Ara Vitae",
 
-  "item.bmaddon.blood_altar_pattern": "Шаблон крови",
+  "item.bmaddon.blood_altar_pattern": "Шаблон Ara Vitae",
   "item.bmaddon.blood_altar_pattern.encoded": "Шаблон: %s",
-  "item.bmaddon.blood_altar_pattern.encoded_unknown": "Записанный шаблон крови",
+  "item.bmaddon.blood_altar_pattern.encoded_unknown": "Записанный шаблон Ara Vitae",
 
   "item.bmaddon.blood_altar_tier_card_2": "Карта кровавого алтаря II",
   "item.bmaddon.blood_altar_tier_card_3": "Карта кровавого алтаря III",
   "item.bmaddon.blood_altar_tier_card_4": "Карта кровавого алтаря IV",
   "item.bmaddon.blood_altar_tier_card_5": "Карта кровавого алтаря V",
 
-  "item.bmaddon.blood_altar_parallel_card": "Карта параллельной обработки кровавого сборщика",
-  "item.bmaddon.blood_magic_speed_card": "Кровавая карта скорости",
+  "item.bmaddon.blood_altar_parallel_card": "Карта параллельной обработки Ara Vitae",
+  "item.bmaddon.blood_magic_speed_card": "Карта скорости Ara Vitae",
 
-  "container.bmaddon.blood_generator": "Генератор крови",
-  "container.bmaddon.blood_altar_assembler": "Кровавый сборщик",
+  "container.bmaddon.blood_generator": "Генератор Essentia Vitae",
+  "container.bmaddon.blood_altar_assembler": "Сборщик Ara Vitae",
 
-  "gui.bmaddon.BloodAltarAssembler": "Кровавый сборщик",
+  "gui.bmaddon.BloodAltarAssembler": "Сборщик Ara Vitae",
   "gui.bmaddon.BloodAltarAssembler.Patterns": "Шаблоны",
   "gui.bmaddon.BloodAltarAssembler.TierCards": "Карты улучшений",
 
   "screen.bmaddon.blood_generator.energy_label": "FE",
-  "screen.bmaddon.blood_generator.blood_label": "Кровь",
+  "screen.bmaddon.blood_generator.blood_label": "Essentia",
   "screen.bmaddon.blood_generator.energy_value": "%s / %s FE",
   "screen.bmaddon.blood_generator.blood_value": "%s / %s mB",
   "screen.bmaddon.blood_generator.generation_value": "+%s mB за %s FE / %s т.",
 
   "tooltip.bmaddon.blood_generator.energy": "Энергия: %s / %s FE",
-  "tooltip.bmaddon.blood_generator.blood": "Кровь: %s / %s mB",
+  "tooltip.bmaddon.blood_generator.blood": "Essentia: %s / %s mB",
+  "tooltip.bmaddon.blood_generator.description": "Потребляет FE для генерации Essentia Vitae.",
+  "tooltip.bmaddon.blood_altar_assembler.description": "AE2-сборщик рецептов Ara Vitae и Tabula Vitae.",
 
-  "tooltip.bmaddon.blood_altar_pattern.empty": "Пустой шаблон крови.",
-  "tooltip.bmaddon.blood_altar_pattern.invalid": "Повреждённый шаблон.",
-  "chat.bmaddon.memory_card.missing_blank_patterns": "Нет кровавых шаблонов в инвентаре",
+  "tooltip.bmaddon.blood_altar_pattern.empty": "Пустой шаблон Ara Vitae.",
+  "tooltip.bmaddon.blood_altar_pattern.invalid": "Поврежденный шаблон.",
   "tooltip.bmaddon.blood_altar_pattern.type": "Тип: %s",
-  "tooltip.bmaddon.blood_altar_pattern.type.blood_altar": "Кровавый алтарь",
-  "tooltip.bmaddon.blood_altar_pattern.type.alchemy_table": "Алхимический стол",
-  "tooltip.bmaddon.blood_altar_pattern.how_to_encode": "Поместите в терминал кодирования шаблонов AE2, чтобы записать рецепт Кровавого Алтаря или Алхимического Стола",
+  "tooltip.bmaddon.blood_altar_pattern.type.blood_altar": "Ara Vitae",
+  "tooltip.bmaddon.blood_altar_pattern.type.alchemy_table": "Tabula Vitae",
   "tooltip.bmaddon.blood_altar_pattern.input": "Вход: %s",
   "tooltip.bmaddon.blood_altar_pattern.input_indexed": "Вход %s: %s",
   "tooltip.bmaddon.blood_altar_pattern.output": "Выход: %s",
-  "tooltip.bmaddon.blood_altar_pattern.tier": "Требуемый уровень алтаря: %s",
-  "tooltip.bmaddon.blood_altar_pattern.life_essence": "Кровь: %s LP",
+  "tooltip.bmaddon.blood_altar_pattern.tier": "Требуемый уровень Ara Vitae: %s",
+  "tooltip.bmaddon.blood_altar_pattern.life_essence": "Essentia Vitae: %s EV",
   "tooltip.bmaddon.blood_altar_pattern.craft_time": "Время: %s т.",
   "tooltip.bmaddon.blood_altar_pattern.recipe_missing": "Рецепт больше не существует.",
   "tooltip.bmaddon.blood_altar_pattern.shift_clear": "Shift + ПКМ: очистить шаблон.",
 
-  "tooltip.bmaddon.blood_altar_tier_card.tier": "Повышает уровень алтаря до: %s",
+  "tooltip.bmaddon.blood_altar_tier_card.tier": "Повышает уровень Ara Vitae до: %s",
   "tooltip.bmaddon.blood_altar_tier_card.description": "Все рецепты нижних уровней также остаются доступны.",
 
-  "tooltip.bmaddon.blood_altar_parallel_card.description": "Увеличивает количество одновременных крафтов в сборщике кровавой магии.",
+  "tooltip.bmaddon.blood_altar_parallel_card.description": "Увеличивает количество одновременных крафтов в сборщике Ara Vitae.",
 
   "tooltip.bmaddon.blood_magic_speed_card.description": "Работает как карта ускорения AE2, но считается за две обычные карты.",
-
+  "chat.bmaddon.memory_card.missing_blank_patterns": "В инвентаре не хватает пустых шаблонов Ara Vitae",
+  "tooltip.bmaddon.blood_altar_pattern.how_to_encode": "Поместите в терминал кодирования шаблонов AE2, чтобы записать рецепт Ara Vitae или Tabula Vitae",
   "message.bmaddon.blood_altar_pattern.cleared": "Шаблон очищен.",
   "message.bmaddon.blood_altar_pattern.already_empty": "Шаблон уже пуст."
 }

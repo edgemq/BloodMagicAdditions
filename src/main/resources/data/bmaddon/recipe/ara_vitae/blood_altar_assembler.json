@@ -1,0 +1,13 @@
+{
+  "type": "neovitae:ara_vitae_recipe",
+  "input": {
+    "item": "ae2:molecular_assembler"
+  },
+  "output": {
+    "id": "bmaddon:blood_altar_assembler"
+  },
+  "minTier": 4,
+  "bloodNeeded": 20000,
+  "craftSpeed": 50,
+  "drainSpeed": 50
+}

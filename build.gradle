@@ -108,6 +108,23 @@ repositories {
             includeGroup "top.theillusivec4.curios"
         }
     }
+
+    maven {
+        name = "Geckolib"
+        url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
+        content {
+            includeGroup "software.bernie.geckolib"
+            includeGroup "com.geckolib"
+        }
+    }
+
+    maven {
+        name = "KliKli"
+        url = "https://dl.cloudsmith.io/public/klikli-dev/mods/maven/"
+        content {
+            includeGroup "com.klikli_dev"
+        }
+    }
 }
 
 dependencies {
@@ -118,12 +135,15 @@ dependencies {
     implementation "org.appliedenergistics:appliedenergistics2:${ae2_version}"
     localRuntime "org.appliedenergistics:guideme:${guideme_version}"
 
-    implementation "com.example.examplemod:BloodMagic-1.21.1:${blood_magic_version}"
+    implementation "curse.maven:neovitae-1404763:${neovitae_file_id}"
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    localRuntime "com.klikli_dev:modonomicon-${minecraft_version}-neoforge:${modonomicon_version}"
     localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}+${minecraft_version}"
     localRuntime "maven.modrinth:jade:${jade_version}+neoforge"
 }
 
 jar {
+    archiveFileName = "bmaddon1.21.1-beta1.jar"
     manifest.attributes([
             "MixinConfigs": "${mod_id}.mixins.json"
     ])
@@ -143,7 +163,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_authors             : mod_authors,
             mod_description         : mod_description,
             ae2_version             : ae2_version,
-            blood_magic_version_range: blood_magic_version_range
+            neovitae_version_range  : neovitae_version_range
     ]
     inputs.properties replaceProperties
     expand replaceProperties

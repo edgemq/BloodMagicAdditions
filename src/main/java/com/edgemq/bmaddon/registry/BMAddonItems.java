@@ -1,13 +1,13 @@
 package com.edgemq.bmaddon.registry;
 
 import com.edgemq.bmaddon.BMAddon;
+import com.edgemq.bmaddon.item.BMAddonBlockItem;
 import com.edgemq.bmaddon.item.BloodAltarParallelCardItem;
 import com.edgemq.bmaddon.item.BloodAltarPatternItem;
 import com.edgemq.bmaddon.item.BloodAltarTierCardItem;
 import com.edgemq.bmaddon.item.BloodMagicSpeedCardItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,12 +24,20 @@ public final class BMAddonItems {
 
     public static final DeferredHolder<Item, Item> BLOOD_GENERATOR = ITEMS.register(
             "blood_generator",
-            () -> new BlockItem(BMAddonBlocks.BLOOD_GENERATOR.get(), new Item.Properties())
+            () -> new BMAddonBlockItem(
+                    BMAddonBlocks.BLOOD_GENERATOR.get(),
+                    new Item.Properties(),
+                    "tooltip.bmaddon.blood_generator.description"
+            )
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_ASSEMBLER = ITEMS.register(
             "blood_altar_assembler",
-            () -> new BlockItem(BMAddonBlocks.BLOOD_ALTAR_ASSEMBLER.get(), new Item.Properties())
+            () -> new BMAddonBlockItem(
+                    BMAddonBlocks.BLOOD_ALTAR_ASSEMBLER.get(),
+                    new Item.Properties(),
+                    "tooltip.bmaddon.blood_altar_assembler.description"
+            )
     );
 
     public static final DeferredHolder<Item, Item> BLOOD_ALTAR_PATTERN = ITEMS.register(
@@ -79,7 +87,6 @@ public final class BMAddonItems {
                         output.accept(BLOOD_ALTAR_TIER_CARD_2.get());
                         output.accept(BLOOD_ALTAR_TIER_CARD_3.get());
                         output.accept(BLOOD_ALTAR_TIER_CARD_4.get());
-                        output.accept(BLOOD_ALTAR_TIER_CARD_5.get());
                         output.accept(BLOOD_ALTAR_PARALLEL_CARD.get());
                         output.accept(BLOOD_MAGIC_SPEED_CARD.get());
                     })

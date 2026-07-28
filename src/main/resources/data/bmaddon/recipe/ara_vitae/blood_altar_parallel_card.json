@@ -1,0 +1,13 @@
+{
+  "type": "neovitae:ara_vitae_recipe",
+  "input": {
+    "item": "ae2:capacity_card"
+  },
+  "output": {
+    "id": "bmaddon:blood_altar_parallel_card"
+  },
+  "minTier": 2,
+  "bloodNeeded": 5000,
+  "craftSpeed": 15,
+  "drainSpeed": 15
+}

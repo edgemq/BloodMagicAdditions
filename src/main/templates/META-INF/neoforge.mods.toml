@@ -9,6 +9,9 @@ displayName="${mod_name}"
 authors="${mod_authors}"
 description='''${mod_description}'''
 
+[[mixins]]
+config="${mod_id}.mixins.json"
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"
@@ -24,9 +27,9 @@ ordering="NONE"
 side="BOTH"
 
 [[dependencies.${mod_id}]]
-modId="bloodmagic"
+modId="neovitae"
 type="required"
-versionRange="${blood_magic_version_range}"
+versionRange="${neovitae_version_range}"
 ordering="AFTER"
 side="BOTH"
 

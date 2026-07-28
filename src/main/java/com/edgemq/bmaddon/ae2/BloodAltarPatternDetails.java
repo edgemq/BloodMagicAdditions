@@ -13,8 +13,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.common.recipe.alchemy_table.AlchemyTableRecipe;
-import wayoftime.bloodmagic.common.recipe.bloodaltar.BloodAltarRecipe;
+import com.breakinblocks.neovitae.api.recipe.AraVitaeRecipe;
+import com.breakinblocks.neovitae.common.recipe.tabulavitae.TabulaVitaeRecipe;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public final class BloodAltarPatternDetails implements IPatternDetails {
         };
     }
 
-    public static Optional<BloodAltarPatternDetails> create(Level level, ItemStack patternStack, BloodAltarRecipe recipe) {
+    public static Optional<BloodAltarPatternDetails> create(Level level, ItemStack patternStack, AraVitaeRecipe recipe) {
         if (level == null || patternStack.isEmpty() || recipe == null) {
             return Optional.empty();
         }
@@ -120,7 +120,7 @@ public final class BloodAltarPatternDetails implements IPatternDetails {
         ));
     }
 
-    public static Optional<BloodAltarPatternDetails> create(Level level, ItemStack patternStack, AlchemyTableRecipe recipe) {
+    public static Optional<BloodAltarPatternDetails> create(Level level, ItemStack patternStack, TabulaVitaeRecipe recipe) {
         if (level == null || patternStack.isEmpty() || recipe == null) {
             return Optional.empty();
         }
@@ -135,7 +135,7 @@ public final class BloodAltarPatternDetails implements IPatternDetails {
             return Optional.empty();
         }
 
-        GenericStack output = createOutput(recipe.output());
+        GenericStack output = createOutput(recipe.getOutput());
 
         if (output == null) {
             return Optional.empty();
@@ -160,7 +160,7 @@ public final class BloodAltarPatternDetails implements IPatternDetails {
             }
         }
 
-        IInput bloodInput = createBloodInput(getRequiredLifeEssence(recipe.essence()));
+        IInput bloodInput = createBloodInput(getRequiredLifeEssence(recipe.getSyphon()));
 
         if (bloodInput != null) {
             inputs.add(bloodInput);
@@ -180,7 +180,7 @@ public final class BloodAltarPatternDetails implements IPatternDetails {
                 definition,
                 inputs.toArray(IInput[]::new),
                 new GenericStack[]{output},
-                recipe.tier(),
+                recipe.getMinimumTier(),
                 0
         ));
     }
@@ -193,12 +193,12 @@ public final class BloodAltarPatternDetails implements IPatternDetails {
         return AEItemKey.of(definitionStack);
     }
 
-    public static int getRequiredLifeEssence(BloodAltarRecipe recipe) {
+    public static int getRequiredLifeEssence(AraVitaeRecipe recipe) {
         return getRequiredLifeEssence(recipe.getTotalBlood());
     }
 
-    public static int getRequiredLifeEssence(AlchemyTableRecipe recipe) {
-        return getRequiredLifeEssence(recipe.essence());
+    public static int getRequiredLifeEssence(TabulaVitaeRecipe recipe) {
+        return getRequiredLifeEssence(recipe.getSyphon());
     }
 
     public static int getRequiredLifeEssence(int syphon) {

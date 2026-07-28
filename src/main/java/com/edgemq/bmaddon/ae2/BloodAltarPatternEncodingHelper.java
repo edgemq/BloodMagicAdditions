@@ -9,8 +9,8 @@ import com.edgemq.bmaddon.registry.BMAddonItems;
 import com.edgemq.bmaddon.util.BloodAltarRecipeHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.common.recipe.alchemy_table.AlchemyTableRecipe;
-import wayoftime.bloodmagic.common.recipe.bloodaltar.BloodAltarRecipe;
+import com.breakinblocks.neovitae.api.recipe.AraVitaeRecipe;
+import com.breakinblocks.neovitae.common.recipe.tabulavitae.TabulaVitaeRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ public final class BloodAltarPatternEncodingHelper {
         }
 
         BloodAltarRecipeHelper.FoundAltarRecipe foundRecipe = recipeOptional.get();
-        BloodAltarRecipe recipe = foundRecipe.recipe();
+        AraVitaeRecipe recipe = foundRecipe.recipe();
 
         if (!BloodAltarRecipeHelper.outputMatches(recipe.getResult(), outputPreview)) {
             return Optional.empty();
@@ -99,7 +99,7 @@ public final class BloodAltarPatternEncodingHelper {
         }
 
         BloodAltarRecipeHelper.FoundAlchemyTableRecipe foundRecipe = recipeOptional.get();
-        AlchemyTableRecipe recipe = foundRecipe.recipe();
+        TabulaVitaeRecipe recipe = foundRecipe.recipe();
 
         ItemStack result = new ItemStack(BMAddonItems.BLOOD_ALTAR_PATTERN.get());
         BloodAltarPatternItem.encode(result, foundRecipe.id(), recipe, itemInputs);

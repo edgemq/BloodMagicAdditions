@@ -36,6 +36,41 @@ public abstract class PatternEncodingTermMenuMixin {
     }
 
     @Inject(
+            method = "transferStackToMenu",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private void bmaddon$transferBloodAltarPatternToPatternSlots(
+            ItemStack input,
+            CallbackInfoReturnable<Integer> callback
+    ) {
+        int initialCount = input.getCount();
+
+        if (isBlankBloodAltarPattern(input)) {
+            ItemStack remainder = blankPatternSlot.safeInsert(input);
+            int transferred = initialCount - remainder.getCount();
+
+            if (transferred > 0) {
+                callback.setReturnValue(transferred);
+                callback.cancel();
+            }
+
+            return;
+        }
+
+        if (isBloodAltarPattern(input)) {
+            ItemStack remainder = encodedPatternSlot.safeInsert(input);
+            int transferred = initialCount - remainder.getCount();
+
+            if (transferred > 0) {
+                callback.setReturnValue(transferred);
+                callback.cancel();
+            }
+        }
+    }
+
+    @Inject(
             method = "encode",
             at = @At("HEAD"),
             cancellable = true,
@@ -59,6 +94,7 @@ public abstract class PatternEncodingTermMenuMixin {
             return;
         }
 
+        ItemStack blankPattern = blankPatternSlot.getItem();
         ItemStack encodeOutput = encodedPatternSlot.getItem();
 
         if (!encodeOutput.isEmpty()
@@ -70,8 +106,6 @@ public abstract class PatternEncodingTermMenuMixin {
         }
 
         if (encodeOutput.isEmpty()) {
-            ItemStack blankPattern = blankPatternSlot.getItem();
-
             if (!isBlankBloodAltarPattern(blankPattern)) {
                 callback.cancel();
                 return;

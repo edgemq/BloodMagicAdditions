@@ -7,20 +7,20 @@
   ],
   "key": {
     "A": {
-      "item": "bloodmagic:selfsacrificerune2"
+      "item": "neovitae:rune_2_sacrifice_self"
     },
     "B": {
-      "item": "bloodmagic:etherealslate"
+      "item": "neovitae:tabula_ampoule"
     },
     "C": {
       "item": "ae2:dense_energy_cell"
     },
     "D": {
-      "item": "bloodmagic:sacrificerune2"
+      "item": "neovitae:rune_2_sacrifice"
     }
   },
   "result": {
-    "item": "bmaddon:blood_generator",
+    "id": "bmaddon:blood_generator",
     "count": 1
   }
 }

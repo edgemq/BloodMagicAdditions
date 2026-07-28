@@ -6,9 +6,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import wayoftime.bloodmagic.common.recipe.BMRecipes;
-import wayoftime.bloodmagic.common.recipe.alchemy_table.AlchemyTableRecipe;
-import wayoftime.bloodmagic.common.recipe.bloodaltar.BloodAltarRecipe;
+import com.breakinblocks.neovitae.api.recipe.AraVitaeRecipe;
+import com.breakinblocks.neovitae.common.recipe.NVRecipes;
+import com.breakinblocks.neovitae.common.recipe.tabulavitae.TabulaVitaeRecipe;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Optional;
 
 public final class BloodAltarRecipeHelper {
-    public record FoundAltarRecipe(ResourceLocation id, BloodAltarRecipe recipe) {
+    public record FoundAltarRecipe(ResourceLocation id, AraVitaeRecipe recipe) {
     }
 
-    public record FoundAlchemyTableRecipe(ResourceLocation id, AlchemyTableRecipe recipe) {
+    public record FoundAlchemyTableRecipe(ResourceLocation id, TabulaVitaeRecipe recipe) {
     }
 
-    public static Optional<BloodAltarRecipe> findAltarRecipe(Level level, ItemStack input) {
+    public static Optional<AraVitaeRecipe> findAltarRecipe(Level level, ItemStack input) {
         return findAltarRecipeWithId(level, input).map(FoundAltarRecipe::recipe);
     }
 
@@ -32,7 +32,7 @@ public final class BloodAltarRecipeHelper {
             return Optional.empty();
         }
 
-        List<RecipeHolder<BloodAltarRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(BMRecipes.BLOOD_ALTAR_TYPE.get());
+        List<RecipeHolder<AraVitaeRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(NVRecipes.ARA_VITAE_TYPE.get());
 
         return recipes.stream()
                 .filter(recipeHolder -> recipeHolder.value().getInput().test(input))
@@ -41,7 +41,7 @@ public final class BloodAltarRecipeHelper {
                 .findFirst();
     }
 
-    public static Optional<BloodAltarRecipe> getAltarRecipe(Level level, ResourceLocation recipeId) {
+    public static Optional<AraVitaeRecipe> getAltarRecipe(Level level, ResourceLocation recipeId) {
         if (level == null || recipeId == null) {
             return Optional.empty();
         }
@@ -49,11 +49,11 @@ public final class BloodAltarRecipeHelper {
         return level.getRecipeManager()
                 .byKey(recipeId)
                 .map(RecipeHolder::value)
-                .filter(recipe -> recipe instanceof BloodAltarRecipe)
-                .map(recipe -> (BloodAltarRecipe) recipe);
+                .filter(recipe -> recipe instanceof AraVitaeRecipe)
+                .map(recipe -> (AraVitaeRecipe) recipe);
     }
 
-    public static Optional<AlchemyTableRecipe> getAlchemyTableRecipe(Level level, ResourceLocation recipeId) {
+    public static Optional<TabulaVitaeRecipe> getAlchemyTableRecipe(Level level, ResourceLocation recipeId) {
         if (level == null || recipeId == null) {
             return Optional.empty();
         }
@@ -61,11 +61,11 @@ public final class BloodAltarRecipeHelper {
         return level.getRecipeManager()
                 .byKey(recipeId)
                 .map(RecipeHolder::value)
-                .filter(recipe -> recipe instanceof AlchemyTableRecipe)
-                .map(recipe -> (AlchemyTableRecipe) recipe);
+                .filter(recipe -> recipe instanceof TabulaVitaeRecipe)
+                .map(recipe -> (TabulaVitaeRecipe) recipe);
     }
 
-    public static Optional<AlchemyTableRecipe> findAlchemyTableRecipe(
+    public static Optional<TabulaVitaeRecipe> findAlchemyTableRecipe(
             Level level,
             List<ItemStack> inputs,
             ItemStack expectedOutput
@@ -82,12 +82,12 @@ public final class BloodAltarRecipeHelper {
             return Optional.empty();
         }
 
-        List<RecipeHolder<AlchemyTableRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(BMRecipes.ALCHEMY_TABLE_TYPE.get());
+        List<RecipeHolder<TabulaVitaeRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(NVRecipes.TABULA_VITAE_TYPE.get());
 
         return recipes.stream()
-                .filter(recipeHolder -> outputMatches(recipeHolder.value().output(), expectedOutput))
+                .filter(recipeHolder -> outputMatches(recipeHolder.value().getOutput(), expectedOutput))
                 .filter(recipeHolder -> inputsMatch(getAlchemyTableIngredients(recipeHolder.value()), inputs))
-                .sorted(Comparator.comparingInt(recipeHolder -> recipeHolder.value().tier()))
+                .sorted(Comparator.comparingInt(recipeHolder -> recipeHolder.value().getMinimumTier()))
                 .map(recipeHolder -> new FoundAlchemyTableRecipe(recipeHolder.id(), recipeHolder.value()))
                 .findFirst();
     }
@@ -105,14 +105,14 @@ public final class BloodAltarRecipeHelper {
                     .map(recipe -> recipe.getResult().copy())
                     .orElse(ItemStack.EMPTY);
             case ALCHEMY_TABLE -> getAlchemyTableRecipe(level, recipeId)
-                    .map(recipe -> recipe.output().copy())
+                    .map(recipe -> recipe.getOutput().copy())
                     .orElse(ItemStack.EMPTY);
         };
     }
 
     @SuppressWarnings("unchecked")
-    public static List<Ingredient> getAlchemyTableIngredients(AlchemyTableRecipe recipe) {
-        return recipe.inputs();
+    public static List<Ingredient> getAlchemyTableIngredients(TabulaVitaeRecipe recipe) {
+        return recipe.getInput();
     }
 
     public static boolean inputsMatch(List<Ingredient> ingredients, List<ItemStack> inputs) {
