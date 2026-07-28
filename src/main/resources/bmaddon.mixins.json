@@ -8,9 +8,7 @@
     "AnointmentApplyRecipeMixin",
     "PatternEncodingLogicMixin",
     "PatternEncodingTermMenuMixin",
-    "RestrictedInputSlotMixin",
-    "UpgradesMixin",
-    "UpgradeInventoryMixin"
+    "RestrictedInputSlotMixin"
   ],
   "client": [],
   "server": [],
