@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "bmaddon.refmap.json",
   "mixins": [
+    "AnointmentApplyRecipeMixin",
     "PatternEncodingLogicMixin",
     "PatternEncodingTermMenuMixin",
     "RestrictedInputSlotMixin"

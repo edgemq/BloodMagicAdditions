@@ -182,6 +182,7 @@ dependencies {
 }
 
 jar {
+    archiveFileName = "RBMAddon26.1.2-beta2.jar"
     manifest.attributes([
             "MixinConfigs": "${mod_id}.mixins.json"
     ])
